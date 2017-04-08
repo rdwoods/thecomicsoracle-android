@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="num_of_columns">2</integer>
+    <integer name="grid_view_columns_portrait">2</integer>
+    <integer name="visible_threshhold">15</integer>
+</resources>

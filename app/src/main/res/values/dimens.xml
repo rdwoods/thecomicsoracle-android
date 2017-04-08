@@ -1,0 +1,35 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+
+    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
+         https://developer.android.com/design/patterns/navigation-drawer.html -->
+    <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <dimen name="character_name_size">20sp</dimen>
+
+    <dimen name="spinner_text_size">16sp</dimen>
+
+    <dimen name="character_name_padding">10dp</dimen>
+    <dimen name="space_medium">8sp</dimen>
+    <dimen name="space_small">4dp</dimen>
+
+    <dimen name="characters_list_margin_top">10dp</dimen>
+    <dimen name="videos_list_margin_top">10dp</dimen>
+    <dimen name="fav_characters_list_margin_top">10dp</dimen>
+
+    <dimen name="section_header_text_size">20sp</dimen>
+    <dimen name="section_header_padding_right">20dp</dimen>
+    <dimen name="section_header_padding_left">20dp</dimen>
+    <dimen name="body_margin_top">10dp</dimen>
+    <dimen name="tab_text_size">12sp</dimen>
+    <dimen name="tab_top_padding">10dp</dimen>
+
+    <dimen name="row_padding">10dp</dimen>
+    <dimen name="promo_card_image_padding">50dp</dimen>
+    <dimen name="promo_card_element_padding">10dp</dimen>
+
+</resources>

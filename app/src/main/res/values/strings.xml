@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">The Comics Oracle</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_character_search">Characters</string>
+    <string name="title_video_search">Videos</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="action_bar_search_string">Search</string>
+    <string name="title_activity_search_results">SearchResultsActivity</string>
+    <string name="saved_character_results">SavedCharacterResults</string>
+    <string name="saved_video_results">SavedVideoResults</string>
+    <string name="saved_character_search_term">savedSearchTerm</string>
+    <string name="saved_video_search_term">saved_video_search_term</string>
+    <string name="shared_prefs_name">ComicsOracleSharedPrefs</string>
+</resources>

@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_favorite_character"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@android:color/transparent"
+              android:keepScreenOn="false">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fav_character_recycler_view"
+        android:layout_marginTop="@dimen/fav_characters_list_margin_top"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

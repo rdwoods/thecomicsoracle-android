@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme -->
+    <style name="ComicsOracleCustomTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:tabWidgetStyle">@style/ComicsOracleCustomTabWidget</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+    <style name="ComicsOracleCustomTabWidget" parent="@android:style/Widget.TabWidget">
+        <item name="android:textAppearance">@style/ComicsOracleCustomTabWidgetText</item>
+    </style>
+    <style name="ComicsOracleCustomTabWidgetText"
+        parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textSize">2sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ComicsOracleCustomToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:actionBarWidgetTheme">@style/ActionBarWidget</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="windowActionBar">false</item>
+        <!-- android:actionMenuTextColor is the color of the text of
+        action (menu) items in the Toolbar, at least in the
+        Theme.AppCompat theme.
+        For some reason, they already get the textColorPrimary
+        when running on API 21, but not on older versions of
+        Android, so this is only necessary to support older
+        Android versions.-->
+        <item name="actionMenuTextColor">@color/colorPrimary</item>
+        <!-- android:textColorSecondary is the color of the menu
+             overflow icon (three vertical dots) -->
+        <item name="android:textColorSecondary">@color/white</item>
+        <!-- This would set the toolbar's background color,
+        but setting this also changes the popup menu's background,
+        even if we define popupTheme for our <Toolbar> -->
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <!-- Actionbar Theme -->
+    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/accent</item>
+    </style>
+
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_open_search</item>
+        <item name="closeIcon">@drawable/ic_close_search</item>
+    </style>
+
+    <style name="ActionBarWidget" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- SearchView customization-->
+        <!--<item name="searchIcon">@drawable/ic_open_search</item>
+        <item name="closeIcon">@drawable/ic_close_search</item>
+        <item name="searchViewTextField">@drawable/ab_textfield_searchview</item>-->
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextView</item>
+    </style>
+
+    <style name="AutoCompleteTextView" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+    
+</resources>
