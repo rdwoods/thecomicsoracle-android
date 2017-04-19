@@ -22,13 +22,6 @@ package com.rwoods.thecomicsoracle.util;
 
 public class Constants {
 
-    public static final String CV_BASE_URL = "http://www.comicvine.com/api/";
-    public static final String CV_API_KEY = "/?api_key=310286c7441deb2eac2cc1aeae01393b69c99452";
-    public static final String CV_CHARACTERS_SEARCH = "characters";
-    public static final String CV_VIDEO_SEARCH = "videos";
-    public static final String CV_FILTER_BY_NAME = "filter";
-    public static final String CV_FORMAT_JSON = "&format=json";
-
     public static final String CHARACTER_DESC = "characterDesc";
     public static final String VIDEO_URL = "videoUrl";
     public static final String CHARACTER = "character";

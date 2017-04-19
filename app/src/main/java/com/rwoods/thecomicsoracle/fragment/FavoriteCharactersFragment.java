@@ -6,16 +6,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.rwoods.thecomicsoracle.R;
 import com.rwoods.thecomicsoracle.activity.CharacterDescriptionActivity;
 import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity;
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter;
-import com.rwoods.thecomicsoracle.entity.ComicCharacter;
+import com.rwoods.thecomicsoracle.model.ComicCharacter;
 import com.rwoods.thecomicsoracle.util.Constants;
-import io.realm.RealmResults;
 
 import java.util.ArrayList;
+
+import io.realm.RealmResults;
 
 /**
  * Created by rahmanwoods on 6/22/16.

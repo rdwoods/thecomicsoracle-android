@@ -1,15 +1,16 @@
 package com.rwoods.thecomicsoracle.api;
 
-import com.github.aurae.retrofit2.LoganSquareConverterFactory;
-import com.rwoods.thecomicsoracle.util.Constants;
+import com.rwoods.thecomicsoracle.BuildConfig;
+
+import java.util.HashMap;
+import java.util.List;
+
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-
-import java.util.HashMap;
-import java.util.List;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class ComicsOracleRetrofitApiRestClient {
 
@@ -27,17 +28,6 @@ public class ComicsOracleRetrofitApiRestClient {
     }
 
     private static void setupRestClient() {
-        // Creates the json object which will manage the information received
-//        GsonBuilder builder = new GsonBuilder();
-//
-//        // Register an com.rwoods.thecomicsoracle.adapter to manage the date types as long values
-//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-//            public Timestamp deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//                return new Timestamp(json.getAsJsonPrimitive().getAsLong());
-//            }
-//        });
-//
-//        Gson gson = builder.create();
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
@@ -62,9 +52,9 @@ public class ComicsOracleRetrofitApiRestClient {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.CV_BASE_URL)
+                .baseUrl(BuildConfig.ENV)
                 //.addConverterFactory(JacksonConverterFactory.create())
-                .addConverterFactory(LoganSquareConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create())
                 .client(client)
                 .build();
 

@@ -1,33 +1,33 @@
-package com.rwoods.thecomicsoracle.entity;
+package com.rwoods.thecomicsoracle.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import com.squareup.moshi.Json;
+
 import io.realm.RealmObject;
 
-@JsonObject
 public class Image extends RealmObject implements Parcelable {
 
-    @JsonField(name = "icon_url")
+    @Json(name = "icon_url")
     private String iconUrl;
 
-    @JsonField(name = "medium_url")
+    @Json(name = "medium_url")
     private String mediumUrl;
 
-    @JsonField(name = "screen_url")
+    @Json(name = "screen_url")
     private String screenUrl;
 
-    @JsonField(name = "small_url")
+    @Json(name = "small_url")
     private String smallUrl;
 
-    @JsonField(name = "super_url")
+    @Json(name = "super_url")
     private String superUrl;
 
-    @JsonField(name = "thumb_url")
+    @Json(name = "thumb_url")
     private String thumbUrl;
 
-    @JsonField(name = "tiny_url")
+    @Json(name = "tiny_url")
     private String tinyUrl;
 
 

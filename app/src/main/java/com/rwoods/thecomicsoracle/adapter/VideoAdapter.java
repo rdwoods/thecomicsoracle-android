@@ -7,10 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.rwoods.thecomicsoracle.R;
-import com.rwoods.thecomicsoracle.entity.Image;
-import com.rwoods.thecomicsoracle.entity.Video;
+import com.rwoods.thecomicsoracle.model.Image;
+import com.rwoods.thecomicsoracle.model.Video;
 
 import java.util.ArrayList;
 

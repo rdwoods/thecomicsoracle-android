@@ -1,29 +1,27 @@
-package com.rwoods.thecomicsoracle.entity;
+package com.rwoods.thecomicsoracle.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import com.squareup.moshi.Json;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-@JsonObject
 public class Video extends RealmObject implements Parcelable {
 
     @PrimaryKey
-    @JsonField
     private long id;
 
-    @JsonField
     private String name;
 
-    @JsonField(name = "image")
+    @Json(name = "image")
     private Image image;
 
-    @JsonField(name = "high_url")
+    @Json(name = "high_url")
     private String highUrl;
 
-    @JsonField(name = "low_url")
+    @Json(name = "low_url")
     private String lowUrl;
 
     public Video(long id, String name, Image image, String highUrl, String lowUrl) {

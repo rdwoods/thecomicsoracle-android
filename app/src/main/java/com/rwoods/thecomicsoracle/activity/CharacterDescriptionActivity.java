@@ -14,30 +14,41 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.rwoods.thecomicsoracle.R;
-import com.rwoods.thecomicsoracle.entity.ComicCharacter;
-import com.rwoods.thecomicsoracle.entity.Image;
+import com.rwoods.thecomicsoracle.model.ComicCharacter;
+import com.rwoods.thecomicsoracle.presenter.CharacterDescriptionPresenter;
 import com.rwoods.thecomicsoracle.util.Constants;
+import com.rwoods.thecomicsoracle.view.CharacterDescriptionActivityView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class CharacterDescriptionActivity extends AppCompatActivity {
+public class CharacterDescriptionActivity extends AppCompatActivity implements CharacterDescriptionActivityView {
 
     private TextView tvCharacterDesc;
-    private Button btnFavoriteCharacter;
+
+    @BindView(R.id.btn_favorite) Button btnFavoriteCharacter;
+
     private ComicCharacter mComicCharacter;
     private boolean favoriteCharacter = false;
 
     private Realm realm;
 
+    private CharacterDescriptionPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_description_text_view);
+        ButterKnife.setDebug(true);
+        ButterKnife.bind(this);
 
         // Set up the toolbar and action bar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -47,8 +58,10 @@ public class CharacterDescriptionActivity extends AppCompatActivity {
             }
         }
 
+        presenter = new CharacterDescriptionPresenter(this);
+
         tvCharacterDesc = (TextView) findViewById(R.id.tv_description);
-        btnFavoriteCharacter = (Button) findViewById(R.id.btn_favorite);
+        //btnFavoriteCharacter = (Button) findViewById(R.id.btn_favorite);
 
         tvCharacterDesc.setMovementMethod(new ScrollingMovementMethod());
 
@@ -62,7 +75,7 @@ public class CharacterDescriptionActivity extends AppCompatActivity {
             mComicCharacter = args.getParcelable(Constants.CHARACTER);
 
             if (mComicCharacter != null) {
-                favoriteCharacter = ifFavoriteCharacter(mComicCharacter.getId());
+                favoriteCharacter = isFavoriteCharacter(mComicCharacter.getId());
 
                 if (favoriteCharacter) {
                     btnFavoriteCharacter.setBackgroundResource(android.R.drawable.star_on);
@@ -89,62 +102,15 @@ public class CharacterDescriptionActivity extends AppCompatActivity {
                 }
             }
         }
-
-
-        btnFavoriteCharacter.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ComicCharacter fav;
-                if (favoriteCharacter) {
-                    final RealmResults<ComicCharacter> fcResults = realm.where(ComicCharacter.class)
-                            .equalTo("id", mComicCharacter.getId())
-                            .findAll();
-
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            // remove single match
-                            fcResults.deleteFirstFromRealm();
-                            fcResults.deleteLastFromRealm();
-                        }
-                    });
-
-
-                    favoriteCharacter = false;
-
-                    btnFavoriteCharacter.setBackgroundResource(android.R.drawable.star_off);
-                } else {
-
-                    realm.beginTransaction();
-                    fav = realm.createObject(ComicCharacter.class); // Create a new object
-
-                    fav.setId(mComicCharacter.getId());
-                    fav.setName(mComicCharacter.getName());
-                    fav.setGender(mComicCharacter.getGender());
-                    fav.setDescription(mComicCharacter.getDescription());
-
-                    if (mComicCharacter.getImage() != null) {
-                        Image image = realm.createObject(Image.class);
-                        image.setIconUrl(mComicCharacter.getImage().getIconUrl());
-                        image.setMediumUrl(mComicCharacter.getImage().getMediumUrl());
-                        image.setScreenUrl(mComicCharacter.getImage().getScreenUrl());
-                        image.setSmallUrl(mComicCharacter.getImage().getSmallUrl());
-                        image.setSuperUrl(mComicCharacter.getImage().getSuperUrl());
-                        image.setThumbUrl(mComicCharacter.getImage().getThumbUrl());
-                        image.setTinyUrl(mComicCharacter.getImage().getTinyUrl());
-                        fav.setImage(image);
-                    }
-
-                    realm.commitTransaction();
-
-                    favoriteCharacter = true;
-
-                    btnFavoriteCharacter.setBackgroundResource(android.R.drawable.star_on);
-                }
-            }
-        });
     }
 
-    private boolean ifFavoriteCharacter(Long id) {
+    @OnClick(R.id.btn_favorite)
+    public void selectAsFavorite(){
+        favoriteCharacter = isFavoriteCharacter(mComicCharacter.getId());
+        presenter.addOrRemoveToFavorites(mComicCharacter, favoriteCharacter, btnFavoriteCharacter);
+    }
+
+    private boolean isFavoriteCharacter(Long id) {
         RealmResults<ComicCharacter> fcResults = realm.where(ComicCharacter.class)
                 .equalTo("id", id)
                 .findAll();

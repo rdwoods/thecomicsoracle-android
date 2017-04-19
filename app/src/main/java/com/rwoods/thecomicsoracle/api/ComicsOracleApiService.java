@@ -1,8 +1,9 @@
 package com.rwoods.thecomicsoracle.api;
 
-import com.rwoods.thecomicsoracle.entity.ComicCharacterResponse;
-import com.rwoods.thecomicsoracle.entity.VideoResponse;
-import com.rwoods.thecomicsoracle.util.Constants;
+import com.rwoods.thecomicsoracle.BuildConfig;
+import com.rwoods.thecomicsoracle.model.ComicCharacterResponse;
+import com.rwoods.thecomicsoracle.model.VideoResponse;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -12,9 +13,9 @@ import retrofit2.http.Query;
  */
 public interface ComicsOracleApiService {
 
-    @GET(Constants.CV_CHARACTERS_SEARCH + Constants.CV_API_KEY + Constants.CV_FORMAT_JSON)
-    Call<ComicCharacterResponse> getCharacterByName(@Query(Constants.CV_FILTER_BY_NAME) String characterName);
+    @GET("characters/?api_key=" + BuildConfig.API_KEY + "&format=json")
+    Call<ComicCharacterResponse> getCharacterByName(@Query("filter") String characterName);
 
-    @GET(Constants.CV_VIDEO_SEARCH + Constants.CV_API_KEY + Constants.CV_FORMAT_JSON)
-    Call<VideoResponse> getVideoByName(@Query(Constants.CV_FILTER_BY_NAME) String videoName);
+    @GET("videos/?api_key=" + BuildConfig.API_KEY + "&format=json")
+    Call<VideoResponse> getVideoByName(@Query("filter") String videoName);
 }

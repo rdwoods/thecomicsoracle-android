@@ -1,30 +1,25 @@
-package com.rwoods.thecomicsoracle.entity;
+package com.rwoods.thecomicsoracle.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+
+import com.squareup.moshi.Json;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-@JsonObject
 public class ComicCharacter extends RealmObject implements Parcelable{
 
     @PrimaryKey
-    @JsonField
     private long id;
 
-    @JsonField
     private String name;
 
-    @JsonField
     private String gender;
 
-    //@JsonProperty("image")
-    @JsonField(name = "image")
+    @Json(name = "image")
     private Image image;
 
-    @JsonField
     private String description;
 
 

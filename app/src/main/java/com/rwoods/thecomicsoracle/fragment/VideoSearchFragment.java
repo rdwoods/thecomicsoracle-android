@@ -15,26 +15,38 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import com.bluelinelabs.logansquare.LoganSquare;
+
 import com.rwoods.thecomicsoracle.R;
 import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity;
 import com.rwoods.thecomicsoracle.activity.VideoViewActivity;
 import com.rwoods.thecomicsoracle.adapter.VideoAdapter;
 import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient;
-import com.rwoods.thecomicsoracle.entity.Video;
-import com.rwoods.thecomicsoracle.entity.VideoResponse;
+import com.rwoods.thecomicsoracle.model.Video;
+import com.rwoods.thecomicsoracle.model.VideoResponse;
 import com.rwoods.thecomicsoracle.util.Constants;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,6 +76,7 @@ public class VideoSearchFragment extends Fragment {
     private SharedPreferences appSharedPrefs;
 
     private String savedSearchTerm;
+    private JsonAdapter<List<Video>> jsonAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -90,6 +103,9 @@ public class VideoSearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(List.class, Video.class);
+        jsonAdapter = moshi.adapter(type);
 
         appSharedPrefs
                 = getActivity().getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
@@ -120,7 +136,6 @@ public class VideoSearchFragment extends Fragment {
 
             mVideoSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
-            final SearchView finalmVideoSearchView = mVideoSearchView;
             mVideoSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String searchText) {
@@ -192,32 +207,6 @@ public class VideoSearchFragment extends Fragment {
 
         restorePreviousSearchResults();
 
-//        switch (NetworkUtil.getInstance().getConnectivityStatus(getActivity().getApplicationContext())) {
-//            case NetworkUtil.TYPE_WIFI:
-//                if (NetworkUtil.getInstance().isOnline(getActivity())) {
-//                    getVideosFromRest(rootView);
-//                } else {
-//                    getCharactersFromDb(rootView);
-//                }
-//                break;
-//
-//            case NetworkUtil.TYPE_MOBILE:
-//                if (NetworkUtil.getInstance().isOnline(getActivity())) {
-//                    getVideosFromRest(rootView);
-//                } else {
-//                    getCharactersFromDb(rootView);
-//                }
-//                break;
-//
-//            case NetworkUtil.TYPE_NOT_CONNECTED:
-//                getCharactersFromDb(rootView);
-//                break;
-//
-//            default:
-//                getCharactersFromDb(rootView);
-//                break;
-//        }
-
         return rootView;
     }
 
@@ -226,7 +215,7 @@ public class VideoSearchFragment extends Fragment {
 
         try {
             if (!savedData.isEmpty()) {
-                mVideoList = (ArrayList<Video>) LoganSquare.parseList(savedData, Video.class);
+                mVideoList = (ArrayList<Video>) jsonAdapter.fromJson(savedData);
                 mVideoAdapter = new VideoAdapter(getActivity(), mVideoList);
                 mVideoRecyclerView.setAdapter(mVideoAdapter);
                 mVideoAdapter.notifyDataSetChanged();
@@ -271,11 +260,11 @@ public class VideoSearchFragment extends Fragment {
 
                 try {
                     String savedSearchTerm = mVideoSearchView.getQuery().toString();
-                    String savedData = LoganSquare.serialize(mVideoList, Video.class);
+                    String savedData = jsonAdapter.toJson(mVideoList);
                     editor.putString(getString(R.string.saved_video_search_term), savedSearchTerm);
                     editor.putString(getString(R.string.saved_video_results), savedData);
                     editor.apply();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
