@@ -15,25 +15,37 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import com.bluelinelabs.logansquare.LoganSquare;
+
 import com.rwoods.thecomicsoracle.R;
 import com.rwoods.thecomicsoracle.activity.CharacterDescriptionActivity;
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter;
 import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient;
-import com.rwoods.thecomicsoracle.entity.ComicCharacter;
-import com.rwoods.thecomicsoracle.entity.ComicCharacterResponse;
+import com.rwoods.thecomicsoracle.model.ComicCharacter;
+import com.rwoods.thecomicsoracle.model.ComicCharacterResponse;
 import com.rwoods.thecomicsoracle.util.Constants;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +58,6 @@ public class CharacterSearchFragment extends Fragment {
     private static final String FRAGMENT_NAME = "character";
 
     private ComicCharacterAdapter mComicCharacterAdapter;
-    private String fragmentName;
 
     private RecyclerView mCharacterRecyclerView;
 
@@ -64,9 +75,7 @@ public class CharacterSearchFragment extends Fragment {
 
     private String savedSearchTerm;
 
-    private boolean isResumed = false;
-
-    private Context mContext;
+    private JsonAdapter<List<ComicCharacter>> jsonAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -93,8 +102,9 @@ public class CharacterSearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mContext = getActivity();
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(List.class, ComicCharacter.class);
+        jsonAdapter = moshi.adapter(type);
 
         appSharedPrefs = getActivity().getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
 
@@ -102,7 +112,7 @@ public class CharacterSearchFragment extends Fragment {
         savedSearchTerm = appSharedPrefs.getString(getString(R.string.saved_character_search_term), "");
 
         if (getArguments() != null) {
-            fragmentName = getArguments().getString(FRAGMENT_NAME);
+            String fragmentName = getArguments().getString(FRAGMENT_NAME);
         }
 
         setHasOptionsMenu(true);
@@ -194,32 +204,6 @@ public class CharacterSearchFragment extends Fragment {
 
         restorePreviousSearchResults();
 
-//        switch (NetworkUtil.getInstance().getConnectivityStatus(getActivity().getApplicationContext())) {
-//            case NetworkUtil.TYPE_WIFI:
-//                if (NetworkUtil.getInstance().isOnline(getActivity())) {
-//                    getCharactersFromRest(rootView);
-//                } else {
-//                    getCharactersFromDb(rootView);
-//                }
-//                break;
-//
-//            case NetworkUtil.TYPE_MOBILE:
-//                if (NetworkUtil.getInstance().isOnline(getActivity())) {
-//                    getCharactersFromRest(rootView);
-//                } else {
-//                    getCharactersFromDb(rootView);
-//                }
-//                break;
-//
-//            case NetworkUtil.TYPE_NOT_CONNECTED:
-//                getCharactersFromDb(rootView);
-//                break;
-//
-//            default:
-//                getCharactersFromDb(rootView);
-//                break;
-//        }
-
         return rootView;
     }
 
@@ -228,7 +212,7 @@ public class CharacterSearchFragment extends Fragment {
 
         try {
             if (!savedData.isEmpty()) {
-                mComicCharacterList = (ArrayList<ComicCharacter>) LoganSquare.parseList(savedData, ComicCharacter.class);
+                mComicCharacterList = (ArrayList<ComicCharacter>) jsonAdapter.fromJson(savedData);
                 mComicCharacterAdapter = new ComicCharacterAdapter(getActivity(), mComicCharacterList);
                 mCharacterRecyclerView.setAdapter(mComicCharacterAdapter);
                 mComicCharacterAdapter.notifyDataSetChanged();
@@ -274,11 +258,11 @@ public class CharacterSearchFragment extends Fragment {
 
                 try {
                     String savedSearchTerm = mCharacterSearchView.getQuery().toString();
-                    String savedData = LoganSquare.serialize(mComicCharacterAdapter.getCharacterList(), ComicCharacter.class);
+                    String savedData = jsonAdapter.toJson(mComicCharacterAdapter.getCharacterList());
                     editor.putString(getString(R.string.saved_character_search_term), savedSearchTerm);
                     editor.putString(getString(R.string.saved_character_results), savedData);
                     editor.apply();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -335,22 +319,16 @@ public class CharacterSearchFragment extends Fragment {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressBar.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
+        mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressBar.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override

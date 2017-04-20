@@ -1,17 +1,16 @@
 package com.rwoods.thecomicsoracle.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
 import com.rwoods.thecomicsoracle.R;
 import com.rwoods.thecomicsoracle.util.Constants;
 
 public class VideoViewActivity extends AppCompatActivity {
 
     private VideoView videoView;
-    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +20,6 @@ public class VideoViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         videoView = (VideoView) findViewById(R.id.video_view);
-
-        mContext = this;
 
         String videoUrl = "";
 

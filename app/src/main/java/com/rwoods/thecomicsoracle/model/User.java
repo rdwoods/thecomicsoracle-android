@@ -1,16 +1,11 @@
-package com.rwoods.thecomicsoracle.entity;
+package com.rwoods.thecomicsoracle.model;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
 import io.realm.RealmObject;
 
-@JsonObject
 public class User extends RealmObject {
 
-    @JsonField
     private String username;
 
-    @JsonField
     private String password;
 
     public User() {

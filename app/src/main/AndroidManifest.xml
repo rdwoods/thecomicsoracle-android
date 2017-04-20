@@ -48,18 +48,6 @@
             </intent-filter>
         </activity>
 
-        <!-- <activity -->
-        <!-- android:name=".activity.MadSkilzMainActivity" -->
-        <!-- android:label="@string/mad_skilz_home" > -->
-        <!-- </activity> -->
-        <!-- <activity -->
-        <!-- android:name=".activity.EmployeesBySkillActivity" -->
-        <!-- android:label="@string/title_activity_employees_by_skills" > -->
-        <!-- </activity> -->
-        <!-- <activity -->
-        <!-- android:name=".activity.EmployeeProfileActivity" -->
-        <!-- android:label="@string/title_activity_employee_profile_activity" > -->
-        <!-- </activity> -->
 
         <receiver
             android:name=".network.NetworkChangeReceiver"
@@ -72,27 +60,15 @@
 
         <activity
             android:name=".activity.CharacterDescriptionActivity">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ComicsOracleMainActivity" />
         </activity>
 
         <activity
             android:name=".activity.VideoViewActivity">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ComicsOracleMainActivity" />
         </activity>
 
 
         <activity
             android:name=".activity.CharacterDescriptionWebViewActivity">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ComicsOracleMainActivity" />
         </activity>
     </application>
 

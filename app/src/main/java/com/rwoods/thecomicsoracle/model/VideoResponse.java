@@ -1,15 +1,13 @@
-package com.rwoods.thecomicsoracle.entity;
+package com.rwoods.thecomicsoracle.model;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.squareup.moshi.Json;
 
 import java.util.List;
 
-@JsonObject
 public class VideoResponse {
 
 
-    @JsonField(name = "results")
+    @Json(name = "results")
     List<Video> videos;
 
     public VideoResponse(List<Video> videos) {

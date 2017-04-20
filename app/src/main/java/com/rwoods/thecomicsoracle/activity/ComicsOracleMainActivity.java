@@ -14,17 +14,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.rwoods.thecomicsoracle.R;
-import com.rwoods.thecomicsoracle.entity.ComicCharacter;
 import com.rwoods.thecomicsoracle.fragment.CharacterSearchFragment;
 import com.rwoods.thecomicsoracle.fragment.FavoriteCharactersFragment;
 import com.rwoods.thecomicsoracle.fragment.VideoSearchFragment;
+import com.rwoods.thecomicsoracle.model.ComicCharacter;
 import com.rwoods.thecomicsoracle.util.Constants;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 import java.util.Comparator;
 import java.util.Locale;
+
+import io.realm.Realm;
 
 public class ComicsOracleMainActivity extends AppCompatActivity {
 
@@ -51,13 +52,6 @@ public class ComicsOracleMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_comics_oracle_main);
 
         sharedPreferences = getSharedPreferences(Constants.SHARED_PREFS, Context.MODE_PRIVATE);
-
-        RealmConfiguration config = new RealmConfiguration
-                .Builder(this)
-                .deleteRealmIfMigrationNeeded()
-                .build();
-
-        Realm.setDefaultConfiguration(config);
 
         // Get a Realm instance for this thread
         realm = Realm.getDefaultInstance();
