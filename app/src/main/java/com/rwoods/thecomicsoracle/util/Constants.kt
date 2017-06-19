@@ -18,14 +18,13 @@ Apache 2.0 License
 See the Apache Version 2.0 License for specific language governing permissions and limitations under the License.
  */
 
-package com.rwoods.thecomicsoracle.util;
+package com.rwoods.thecomicsoracle.util
 
-public class Constants {
+object Constants {
 
-    public static final String CHARACTER_DESC = "characterDesc";
-    public static final String VIDEO_URL = "videoUrl";
-    public static final String CHARACTER = "character";
-    public static final String SHARED_PREFS = "ComicsOracleSharedPrefs";
-    public static final String SEARCHED_CHARACTER_LIST = "searchedCharacterList";
-    public static final String SEARCHED_CHARACTER = "searchedCharacter";
+    val VIDEO_URL = "videoUrl"
+    val CHARACTER = "character"
+    val SHARED_PREFS = "ComicsOracleSharedPrefs"
+    val SEARCHED_CHARACTER_LIST = "searchedCharacterList"
+    val SEARCHED_CHARACTER = "searchedCharacter"
 }

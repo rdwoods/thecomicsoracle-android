@@ -1,0 +1,109 @@
+package com.rwoods.thecomicsoracle.util
+
+/**
+ * Created by rwoods on 1/29/2016.
+ */
+
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+
+import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
+import com.rwoods.thecomicsoracle.encryption.AesEncrypt
+
+import java.util.ArrayList
+import java.util.HashMap
+
+import okhttp3.Cookie
+import okhttp3.HttpUrl
+
+class NetworkUtil protected constructor()// Exists only to defeat instantiation.
+{
+    internal var cookies: MutableList<Cookie> = ArrayList()
+    var aesEncrypt: AesEncrypt? = null
+
+    fun isOnline(context: Context): Boolean {
+        when (getConnectivityStatus(context)) {
+            NetworkUtil.TYPE_WIFI -> return true
+
+            NetworkUtil.TYPE_MOBILE -> return true
+
+            NetworkUtil.TYPE_NOT_CONNECTED -> return false
+
+            else -> return false
+        }
+    }
+
+    private var  online: Boolean = false
+
+    fun setOnline(online: Boolean) {
+        this.online = online
+    }
+
+    fun getCookies(): List<Cookie> {
+        val cookieMap = ComicsOracleRetrofitApiRestClient.accessibleCookieStore
+
+        for (key in cookieMap.keys) {
+            for (cookie in cookieMap[key]!!) {
+                cookies.add(cookie)
+            }
+        }
+
+        return cookies
+    }
+
+
+    fun getSpecificCookie(cookieName: String): String {
+        val cookieMap = ComicsOracleRetrofitApiRestClient.accessibleCookieStore
+
+        var cookieValue: String? = null
+        for (key in cookieMap.keys) {
+            for (cookie in cookieMap[key]!!) {
+                if (cookie.name().contains(cookieName)) {
+                    cookieValue = cookie.value()
+                }
+            }
+        }
+
+        return cookieValue as String
+    }
+
+    companion object {
+
+        val TYPE_WIFI = 1
+        val TYPE_MOBILE = 2
+        val TYPE_NOT_CONNECTED = 0
+
+        private var online = true
+
+        fun getConnectivityStatus(context: Context): Int {
+            val cm = context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            val activeNetwork = cm.activeNetworkInfo
+            if (null != activeNetwork) {
+                if (activeNetwork.type == ConnectivityManager.TYPE_WIFI) {
+                    return TYPE_WIFI
+                }
+
+                if (activeNetwork.type == ConnectivityManager.TYPE_MOBILE) {
+                    return TYPE_MOBILE
+                }
+            }
+            return TYPE_NOT_CONNECTED
+        }
+
+        fun getConnectivityStatusString(context: Context): String? {
+            val conn = getConnectivityStatus(context)
+            var status: String? = null
+            if (conn == NetworkUtil.TYPE_WIFI) {
+                status = "Wifi enabled"
+            } else if (conn == NetworkUtil.TYPE_MOBILE) {
+                status = "Mobile data enabled"
+            } else if (conn == NetworkUtil.TYPE_NOT_CONNECTED) {
+                status = "Not connected to Internet"
+            }
+            return status
+        }
+    }
+}

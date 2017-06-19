@@ -2,13 +2,18 @@ package com.rwoods.thecomicsoracle.encryption;
 
 import org.apache.commons.codec.binary.Base64;
 
-import javax.crypto.*;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.Charset;
 import java.security.AlgorithmParameters;
 import java.security.SecureRandom;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by rahmanwoods on 5/21/15.

@@ -1,9 +1,12 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
 
     defaultConfig {
         applicationId "com.rwoods.thecomicsoracle"
@@ -19,14 +22,46 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            applicationIdSuffix ".debug"
+        }
+
+        /**
+         * The 'initWith' property allows you to copy configurations from other build types,
+         * so you don't have to configure one from the beginning. You can then configure
+         * just the settings you want to change. The following line initializes
+         * 'jnidebug' using the debug build type, and changes only the
+         * applicationIdSuffix and versionNameSuffix settings.
+         */
+
+        jnidebug {
+
+            // This copies the debuggable attribute and debug signing configurations.
+            initWith debug
+
+            applicationIdSuffix ".jnidebug"
+            jniDebuggable true
+        }
     }
 
+    flavorDimensions "mdpi", "hdpi"
+
     productFlavors {
-        dev {
+        /*dev {
             buildConfigField("String", "ENV", '"https://comicvine.gamespot.com/api/"')
             buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
+        }*/
+
+        fullmdpi {
+            dimension "mdpi"
+            buildConfigField("String", "ENV", '"https://comicvine.gamespot.com/api/"')
+            buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
+            minSdkVersion 21
         }
-        prod {
+
+        fullhdpi {
+            dimension "hdpi"
             buildConfigField("String", "ENV", '"https://comicvine.gamespot.com/api/"')
             buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
             minSdkVersion 21
@@ -49,6 +84,7 @@ repositories {
     maven {
         url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
     }
+    mavenCentral()
 }
 
 
@@ -59,14 +95,16 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // Square dependencies
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:retrofit-mock:2.0.1'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile 'com.squareup.moshi:moshi:1.4.0'
-    compile 'com.squareup.retrofit2:converter-moshi:2.2.0'
+    compile 'com.squareup.moshi:moshi:1.5.0'
+    compile 'com.squareup.retrofit2:converter-moshi:2.3.0'
+    compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
 
     // Apache Collections Commons
     compile 'org.apache.commons:commons-lang3:3.4'
@@ -76,14 +114,21 @@ dependencies {
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    // Fresco
+    compile 'com.facebook.fresco:fresco:1.3.0'
+
     // Rx Java
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'org.slf4j:slf4j-simple:1.7.13'
 
     // Stetho
-    compile 'com.facebook.stetho:stetho:1.3.1'
-    compile 'com.uphyca:stetho_realm:0.9.0'
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.uphyca:stetho_realm:2.0.0'
+
+    // Realm/Kotlin
+    kapt "io.realm:realm-annotations:3.3.1"
+    kapt "io.realm:realm-annotations-processor:3.3.1"
 
     // Butterknife
     compile 'com.jakewharton:butterknife:8.5.1'
@@ -91,7 +136,7 @@ dependencies {
 
     // JUnit
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:1.10.19"
+    testCompile "org.mockito:mockito-core:2.7.22"
 
     // Android JUnit Runner
     androidTestCompile 'com.android.support.test:runner:0.5'
@@ -114,4 +159,5 @@ dependencies {
     }
 
     androidTestCompile 'com.android.support:support-annotations:25.3.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
