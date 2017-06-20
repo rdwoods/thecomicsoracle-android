@@ -1,18 +1,13 @@
 package com.rwoods.thecomicsoracle.activity
 
 import android.content.Context
+import android.graphics.Point
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.WindowManager
 import android.webkit.WebView
-
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.util.Constants
-import android.opengl.ETC1.getWidth
-import android.content.Context.WINDOW_SERVICE
-import android.graphics.Point
-import android.view.WindowManager
-import android.view.Display
-import com.squareup.moshi.Moshi
 import java.nio.charset.StandardCharsets
 
 

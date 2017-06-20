@@ -268,10 +268,13 @@ class CharacterSearchFragment : Fragment() {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(activity, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                val comicCharacterJsonAdapter = moshi!!.adapter(ComicCharacter::class.java)
-                val json = comicCharacterJsonAdapter.toJson(mComicCharacterAdapter!!.characterList[position])
-                //bundle.putString(Constants.CHARACTER, json);
-                var byte: ByteArray? = mComicCharacterAdapter!!.characterList[position].description?.toByteArray(StandardCharsets.UTF_8)
+                var descr: String? = mComicCharacterAdapter!!.characterList[position].description
+
+                if (descr == null){
+                    descr = ""
+                }
+
+                val byte: ByteArray? = descr.toByteArray(StandardCharsets.UTF_8)
                 bundle.putByteArray(Constants.CHARACTER, byte!!)
                 intent.putExtras(bundle)
 
