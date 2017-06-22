@@ -1,12 +1,8 @@
 package com.rwoods.thecomicsoracle.util
 
 import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
-
-import java.io.IOException
-
-import okhttp3.ResponseBody
-import retrofit2.Converter
 import retrofit2.Response
+import java.io.IOException
 
 /**
  * Created by rwoods on 3/7/2016.

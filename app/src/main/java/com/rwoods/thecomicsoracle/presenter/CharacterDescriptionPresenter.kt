@@ -1,13 +1,10 @@
 package com.rwoods.thecomicsoracle.presenter
 
 import android.widget.Button
-
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.model.Image
 import com.rwoods.thecomicsoracle.view.CharacterDescriptionActivityView
-
 import io.realm.Realm
-import io.realm.RealmResults
 
 /**
  * Created by rahmanwoods on 4/8/17.

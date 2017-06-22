@@ -6,16 +6,10 @@ package com.rwoods.thecomicsoracle.util
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
-
 import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
 import com.rwoods.thecomicsoracle.encryption.AesEncrypt
-
-import java.util.ArrayList
-import java.util.HashMap
-
 import okhttp3.Cookie
-import okhttp3.HttpUrl
+import java.util.*
 
 class NetworkUtil protected constructor()// Exists only to defeat instantiation.
 {

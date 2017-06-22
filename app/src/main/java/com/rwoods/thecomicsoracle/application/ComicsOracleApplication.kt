@@ -3,11 +3,8 @@ package com.rwoods.thecomicsoracle.application
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
-import com.facebook.drawee.backends.pipeline.Fresco
-
 import com.facebook.stetho.Stetho
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider
-
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -27,8 +24,6 @@ class ComicsOracleApplication : Application() {
                 .build()
 
         Realm.setDefaultConfiguration(config)
-
-        Fresco.initialize(this);
 
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)

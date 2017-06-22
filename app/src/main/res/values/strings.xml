@@ -12,4 +12,7 @@
     <string name="saved_character_search_term">savedSearchTerm</string>
     <string name="saved_video_search_term">saved_video_search_term</string>
     <string name="shared_prefs_name">ComicsOracleSharedPrefs</string>
+    <string name="sr_video_thumbnail">Video thumbnail image</string>
+    <string name="sr_fav_character_thumbnail">Favorite character thumbnail image</string>
+    <string name="sr_thumbnail_image">Character thumbnail image</string>
 </resources>

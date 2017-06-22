@@ -4,8 +4,10 @@ import com.squareup.moshi.Json
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import io.realm.annotations.RealmClass
 
-open class Video : RealmObject {
+@RealmClass
+open class Video : RealmObject() {
 
     @PrimaryKey
     var id: Long = 0
@@ -20,6 +22,4 @@ open class Video : RealmObject {
 
     @Json(name = "low_url")
     var lowUrl: String? = null
-
-    constructor() {}
 }

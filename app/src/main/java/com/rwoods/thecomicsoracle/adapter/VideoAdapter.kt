@@ -7,25 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.bumptech.glide.Glide
-import com.facebook.drawee.view.SimpleDraweeView
 import com.rwoods.thecomicsoracle.R
-import com.rwoods.thecomicsoracle.model.Image
 import com.rwoods.thecomicsoracle.model.Video
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by rahmanwoods on 5/12/15.
  */
 class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video>) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
-    val searchedVideoList: ArrayList<Video>
+    val searchedVideoList: ArrayList<Video> = ArrayList()
     private var mItemClickListener: OnItemClickListener? = null
 
 
     init {
-        this.searchedVideoList = ArrayList<Video>()
         this.searchedVideoList.addAll(this.videoList)
     }
 
@@ -45,11 +40,11 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
 
 
     inner class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
-        var ivVideoThumbnail: SimpleDraweeView? = null
+        var ivVideoThumbnail: ImageView? = null
         val tvVideoTitle: TextView
 
         init {
-            ivVideoThumbnail = view.findViewById(R.id.video_thumbnail) as SimpleDraweeView
+            ivVideoThumbnail = view.findViewById(R.id.video_thumbnail) as ImageView
             tvVideoTitle = view.findViewById(R.id.video_name) as TextView
             tvVideoTitle.setOnClickListener(this)
         }
@@ -79,7 +74,12 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
             val url = image.iconUrl
 
             if (url != null) {
-                holder.ivVideoThumbnail!!.setImageURI(url)
+                Glide.with(mContext)
+                        .load(url)
+                        .placeholder(R.drawable.default_profile_avatar)
+                        .error(R.drawable.default_profile_avatar)
+                        .centerCrop()
+                        .into(holder.ivVideoThumbnail)
             }
         }
     }

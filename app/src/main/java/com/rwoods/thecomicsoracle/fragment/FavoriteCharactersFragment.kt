@@ -6,25 +6,15 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
+import android.view.*
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.activity.CharacterDescriptionActivity
 import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.util.Constants
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-
-import java.util.ArrayList
-
-import io.realm.RealmResults
+import java.util.*
 
 /**
  * Created by rahmanwoods on 6/22/16.

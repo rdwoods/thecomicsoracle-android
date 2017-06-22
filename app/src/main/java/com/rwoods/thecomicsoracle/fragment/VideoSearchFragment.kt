@@ -16,15 +16,9 @@ import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
-
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.activity.VideoViewActivity
@@ -36,17 +30,12 @@ import com.rwoods.thecomicsoracle.util.Constants
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import java.io.IOException
-import java.lang.reflect.Type
-import java.util.ArrayList
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.

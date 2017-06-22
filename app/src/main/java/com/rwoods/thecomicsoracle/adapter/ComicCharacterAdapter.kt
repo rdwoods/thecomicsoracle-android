@@ -5,13 +5,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-
-import com.facebook.drawee.view.SimpleDraweeView
+import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by rahmanwoods on 5/12/15.
@@ -41,11 +40,11 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
 
 
     inner class CharacterViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
-        var ivCharacterThumbnail: SimpleDraweeView? = null
+        var ivCharacterThumbnail: ImageView? = null
         val tvCharacterName: TextView
 
         init {
-            ivCharacterThumbnail = view.findViewById(R.id.character_thumbnail) as SimpleDraweeView
+            ivCharacterThumbnail = view.findViewById(R.id.character_thumbnail) as ImageView
             tvCharacterName = view.findViewById(R.id.character_name) as TextView
             tvCharacterName.setOnClickListener(this)
         }
@@ -88,7 +87,12 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
             val url = image.iconUrl
 
             if (url != null) {
-                holder.ivCharacterThumbnail?.setImageURI(url)
+                Glide.with(mContext)
+                    .load(url)
+                    .placeholder(R.drawable.default_profile_avatar)
+                    .error(R.drawable.default_profile_avatar)
+                    .centerCrop()
+                    .into(holder.ivCharacterThumbnail)
             }
         }
     }
