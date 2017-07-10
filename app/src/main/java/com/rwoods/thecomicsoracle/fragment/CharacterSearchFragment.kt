@@ -6,8 +6,6 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -19,22 +17,10 @@ import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.rwoods.thecomicsoracle.R
-import com.rwoods.thecomicsoracle.activity.CharacterDescriptionWebViewActivity
-import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
-import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import com.rwoods.thecomicsoracle.model.ComicCharacterResponse
-import com.rwoods.thecomicsoracle.util.Constants
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
+import com.rwoods.thecomicsoracle.viewmodel.CharacterSearchFragmentViewModel
 import org.slf4j.LoggerFactory
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -43,38 +29,22 @@ import java.util.*
  */
 class CharacterSearchFragment : Fragment() {
 
-    private var mComicCharacterAdapter: ComicCharacterAdapter? = null
-
     private var mCharacterRecyclerView: RecyclerView? = null
-    private var asmCharacterRecyclerView: RecyclerView? = null
-
-    private var mComicCharacterList: ArrayList<ComicCharacter>? = null
-    private var mSearchedComicCharacterList: ArrayList<ComicCharacter>? = null
 
     private var mProgressBar: ProgressBar? = null
     private var mCharacterSearchView: SearchView? = null
 
-    private var appSharedPrefs: SharedPreferences? = null
-
     private var savedSearchTerm: String? = null
-
-    private var jsonAdapter: JsonAdapter<List<ComicCharacter>>? = null
-    private var moshi: Moshi? = null
 
     val fragmentName: String
         get() = FRAGMENT_NAME
 
 
+    private var mViewModel: CharacterSearchFragmentViewModel? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        moshi = Moshi.Builder().build()
-        val type = Types.newParameterizedType(List::class.java, ComicCharacter::class.java)
-        jsonAdapter = moshi!!.adapter<List<ComicCharacter>>(type)
-
-        appSharedPrefs = activity.getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
-
-
-        savedSearchTerm = appSharedPrefs!!.getString(getString(R.string.saved_character_search_term), "")
 
         if (arguments != null) {
             val fragmentName = arguments.getString(FRAGMENT_NAME)
@@ -104,7 +74,9 @@ class CharacterSearchFragment : Fragment() {
 
                     clearPreviousList()
 
-                    getCharactersFromRest(searchText.trim { it <= ' ' })
+                    showProgress(true)
+
+                    mViewModel?.getCharactersFromRest(searchText.trim { it <= ' ' })
 
                     mCharacterSearchView!!.clearFocus()
 
@@ -117,9 +89,9 @@ class CharacterSearchFragment : Fragment() {
 
                         clearPreviousList()
 
-                        mComicCharacterAdapter = ComicCharacterAdapter(activity, mSearchedComicCharacterList!!)
+                        mViewModel?.setCharacterAdapter(activity, mViewModel?.mSearchedComicCharacterList!!)
+                        mViewModel?.setAdapterOnClick()
 
-                        setOnClickListener()
                     }
 
                     return false
@@ -148,6 +120,8 @@ class CharacterSearchFragment : Fragment() {
         // Inflate the layout for this fragment
         val rootView = inflater!!.inflate(R.layout.fragment_character, container, false)
 
+        mViewModel = CharacterSearchFragmentViewModel(this)
+
         //Your RecyclerView
         mCharacterRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
         mCharacterRecyclerView!!.setHasFixedSize(true)
@@ -156,8 +130,9 @@ class CharacterSearchFragment : Fragment() {
 
         mProgressBar = rootView.findViewById(R.id.search_character_progress) as ProgressBar
 
-        mComicCharacterList = ArrayList<ComicCharacter>()
-        mSearchedComicCharacterList = ArrayList<ComicCharacter>()
+        mViewModel!!.setUp()
+
+        savedSearchTerm = mViewModel?.mComicsOracleRepo!!.helper.savedSearchResults
 
         restorePreviousSearchResults()
 
@@ -165,111 +140,51 @@ class CharacterSearchFragment : Fragment() {
     }
 
     private fun restorePreviousSearchResults() {
-        val savedData = appSharedPrefs!!.getString(getString(R.string.saved_character_results), "")
+        val savedData = mViewModel?.mComicsOracleRepo?.helper?.savedSearchResults
 
         try {
             if (!savedData!!.isEmpty()) {
-                mComicCharacterList = jsonAdapter!!.fromJson(savedData) as ArrayList<ComicCharacter>
-                mComicCharacterAdapter = ComicCharacterAdapter(activity, mComicCharacterList!!)
-                mCharacterRecyclerView!!.adapter = mComicCharacterAdapter
-                mComicCharacterAdapter!!.notifyDataSetChanged()
+                mViewModel?.setCharacterList(mViewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<ComicCharacter>)
+                mViewModel?.setCharacterAdapter(activity, mViewModel?.mComicCharacterList!!)
+                mViewModel?.setAdapterOnClick()
+                mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
+                mViewModel?.mComicCharacterAdapter!!!!.notifyDataSetChanged()
                 mCharacterRecyclerView!!.visibility = View.VISIBLE
-                setOnClickListener()
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
-    private fun getCharactersFromRest(searchText: String) {
-        mCharacterRecyclerView!!.visibility = View.GONE
-        showProgress(true)
 
-        val filteredCharacterName = "name:" + searchText
-        val characterSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getCharacterByName(filteredCharacterName)
+    fun displayCharactersFromRest(comicCharacters: ArrayList<ComicCharacter>?) {
+        mViewModel?.setCharacterAdapter(activity, comicCharacters!!)
+        mViewModel?.setAdapterOnClick()
 
-        characterSearchCall?.enqueue(object : Callback<ComicCharacterResponse> {
+        mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
 
-            override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
+        mViewModel?.mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
 
-                val comicCharacters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
+        try {
+            val savedSearchTerm = mCharacterSearchView!!.query.toString()
+            val savedData = mViewModel!!.getSavedData()
 
-                if (comicCharacters == null) {
-                    //View rootView = getView().findViewById(R.id.character_recycler_view).getRootView();
-                    Toast.makeText(context, "Search of characters failed.", Toast.LENGTH_LONG).show()
-                    return
-                }
+            mViewModel?.mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData!!)
 
-                mComicCharacterAdapter = ComicCharacterAdapter(activity, comicCharacters)
-
-                mCharacterRecyclerView!!.adapter = mComicCharacterAdapter
-
-                appSharedPrefs!!
-                        .edit()
-                        .remove(getString(R.string.saved_character_search_term))
-                        .remove(getString(R.string.saved_character_results))
-                        .apply()
-
-                try {
-                    val savedSearchTerm = mCharacterSearchView!!.query.toString()
-                    val savedData = jsonAdapter!!.toJson(mComicCharacterAdapter!!.characterList)
-                    appSharedPrefs!!
-                            .edit()
-                            .putString(getString(R.string.saved_character_search_term), savedSearchTerm)
-                            .putString(getString(R.string.saved_character_results), savedData)
-                            .apply()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
 
-                showProgress(false)
-                mCharacterRecyclerView!!.visibility = View.VISIBLE
+        showProgress(false)
+        mCharacterRecyclerView!!.visibility = View.VISIBLE
 
-                setOnClickListener()
-            }
-
-            override fun onFailure(call: Call<ComicCharacterResponse>, throwable: Throwable) {
-                mCharacterRecyclerView!!.visibility = View.GONE
-                mProgressBar!!.visibility = View.VISIBLE
-                activity.runOnUiThread {
-                    Toast.makeText(context, "Could not get character list", Toast.LENGTH_LONG).show()
-
-                    showProgress(false)
-                    mCharacterRecyclerView!!.visibility = View.VISIBLE
-                }
-            }
-        })
     }
-
 
     private fun clearPreviousList() {
-        mComicCharacterList!!.clear()
+        mViewModel?.mComicCharacterList!!.clear()
     }
 
-
-    private fun setOnClickListener() {
-
-        mComicCharacterAdapter!!.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
-            override fun onItemClick(view: View, position: Int) {
-                //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
-                val intent = Intent(activity, CharacterDescriptionWebViewActivity::class.java)
-                val bundle = Bundle()
-                var descr: String? = mComicCharacterAdapter!!.characterList[position].description
-
-                if (descr == null){
-                    descr = ""
-                }
-
-                val byte: ByteArray? = descr.toByteArray(StandardCharsets.UTF_8)
-                bundle.putByteArray(Constants.CHARACTER, byte!!)
-                intent.putExtras(bundle)
-
-                startActivity(intent)
-            }
-        })
-    }
 
     /**
      * Shows the progress UI and hides the login form.
@@ -329,6 +244,21 @@ class CharacterSearchFragment : Fragment() {
             val args = Bundle()
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    fun displayCharacterSearchNotRetrieved() {
+        Toast.makeText(activity, "Search of characters failed.", Toast.LENGTH_LONG).show()
+    }
+
+    fun displayCharacterSearchFailed() {
+        mCharacterRecyclerView!!.visibility = View.GONE
+        mProgressBar!!.visibility = View.VISIBLE
+        activity.runOnUiThread {
+            Toast.makeText(activity, "Could not get character list", Toast.LENGTH_LONG).show()
+
+            showProgress(false)
+            mCharacterRecyclerView!!.visibility = View.VISIBLE
         }
     }
 }

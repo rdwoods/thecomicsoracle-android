@@ -10,17 +10,18 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.Video
-import java.util.*
 
 /**
  * Created by rahmanwoods on 5/12/15.
  */
 class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video>) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
-    val searchedVideoList: ArrayList<Video> = ArrayList()
+    var mVideoList: ArrayList<Video>  = ArrayList()
+    var searchedVideoList: ArrayList<Video> = ArrayList()
     private var mItemClickListener: OnItemClickListener? = null
 
 
     init {
+        this.mVideoList = videoList
         this.searchedVideoList.addAll(this.videoList)
     }
 

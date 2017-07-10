@@ -16,11 +16,13 @@ import java.util.*
  * Created by rahmanwoods on 5/12/15.
  */
 class ComicCharacterAdapter(private val mContext: Context, val characterList: ArrayList<ComicCharacter>) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    val searchedCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
+    internal var mCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
+    internal val searchedCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
     private var mItemClickListener: OnItemClickListener? = null
 
 
     init {
+        this.mCharacterList = characterList
         this.searchedCharacterList.addAll(characterList)
     }
 

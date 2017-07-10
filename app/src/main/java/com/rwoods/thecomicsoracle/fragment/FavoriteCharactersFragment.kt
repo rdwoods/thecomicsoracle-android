@@ -1,20 +1,16 @@
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.rwoods.thecomicsoracle.R
-import com.rwoods.thecomicsoracle.activity.CharacterDescriptionActivity
-import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import com.rwoods.thecomicsoracle.util.Constants
-import com.squareup.moshi.Moshi
-import java.util.*
+import com.rwoods.thecomicsoracle.viewmodel.FavoriteCharacterFragmentViewModel
+import io.realm.RealmResults
 
 /**
  * Created by rahmanwoods on 6/22/16.
@@ -23,8 +19,9 @@ class FavoriteCharactersFragment : Fragment() {
     private var mFavComicCharacterAdapter: ComicCharacterAdapter? = null
 
     private var mFavCharacterRecyclerView: RecyclerView? = null
-    private var mFavCharacterList: ArrayList<ComicCharacter>? = null
     private var fragmentName: String? = null
+
+    private var mViewModel: FavoriteCharacterFragmentViewModel? = null
 
     fun getFragmentName(): String {
         return FRAGMENT_NAME
@@ -56,59 +53,43 @@ class FavoriteCharactersFragment : Fragment() {
         // Inflate the layout for this fragment
         val rootView = inflater!!.inflate(R.layout.fragment_fav_character, container, false)
 
+        mViewModel = FavoriteCharacterFragmentViewModel(this)
+
         //Your RecyclerView
         mFavCharacterRecyclerView = rootView.findViewById(R.id.fav_character_recycler_view) as RecyclerView
         mFavCharacterRecyclerView!!.setHasFixedSize(true)
         mFavCharacterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
 
-        mFavCharacterList = ArrayList<ComicCharacter>()
+        mViewModel!!.setUp()
 
+        val favoriteCharacters = mViewModel?.mComicsOracleRepo?.getFavoritesFromDb()
 
-        getFavoritesFromDb()
+        displayFavorites(favoriteCharacters)
 
         return rootView
     }
 
-    private fun getFavoritesFromDb() {
-        val fcResults = (activity as ComicsOracleMainActivity).realm!!.where(ComicCharacter::class.java).findAll()
+    private fun displayFavorites(favoriteCharacters: RealmResults<ComicCharacter>?) {
+        clearPreviousList()
 
-        mFavCharacterList!!.clear()
+        if (!favoriteCharacters?.isEmpty()!!) {
 
-        if (!fcResults.isEmpty()) {
+            mViewModel?.mFavCharacterList!!.addAll(favoriteCharacters)
 
-            mFavCharacterList!!.addAll(fcResults)
-
-            mFavComicCharacterAdapter = ComicCharacterAdapter(activity, mFavCharacterList as ArrayList<ComicCharacter>)
+            mViewModel?.setAdapter(mViewModel?.mFavCharacterList)
 
             mFavCharacterRecyclerView!!.adapter = mFavComicCharacterAdapter
 
-            setOnClickListener()
+            mViewModel?.setAdapterOnClick()
         }
     }
 
 
+
     private fun clearPreviousList() {
-        mFavCharacterList!!.clear()
+        mViewModel?.mFavCharacterList!!.clear()
     }
 
-
-    private fun setOnClickListener() {
-
-        mFavComicCharacterAdapter!!.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener{
-            override fun onItemClick(view: View, position: Int) {
-                val intent = Intent(activity, CharacterDescriptionActivity::class.java)
-
-                val moshi = Moshi.Builder().build()
-                val comicCharacterJsonAdapter = moshi.adapter(ComicCharacter::class.java)
-                val json = comicCharacterJsonAdapter.toJson(mFavCharacterList!![position])
-
-                val bundle = Bundle()
-                bundle.putString(Constants.CHARACTER, json)
-                intent.putExtras(bundle) //Put your id to your next Intent
-                startActivity(intent)
-            }
-        })
-    }
 
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)

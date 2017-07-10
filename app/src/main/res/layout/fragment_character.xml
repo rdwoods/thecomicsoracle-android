@@ -4,7 +4,7 @@
     android:id="@+id/search_character_frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity"
+    tools:mView="com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity"
     android:orientation="vertical"
     android:background="@android:color/transparent"
     android:keepScreenOn="false">
