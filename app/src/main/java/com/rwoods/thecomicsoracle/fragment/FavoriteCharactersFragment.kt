@@ -42,9 +42,6 @@ class FavoriteCharactersFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return super.onOptionsItemSelected(item)
     }
 
@@ -76,7 +73,7 @@ class FavoriteCharactersFragment : Fragment() {
 
             mViewModel?.mFavCharacterList!!.addAll(favoriteCharacters)
 
-            mViewModel?.setAdapter(mViewModel?.mFavCharacterList)
+            mViewModel?.mFavComicCharacterAdapter?.setComicCharacters(mViewModel?.mFavCharacterList!!)
 
             mFavCharacterRecyclerView!!.adapter = mFavComicCharacterAdapter
 

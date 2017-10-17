@@ -1,6 +1,5 @@
 package com.rwoods.thecomicsoracle.viewmodel
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -24,7 +23,6 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
 
     internal var mComicCharacterAdapter: ComicCharacterAdapter? = null
 
-    internal var mComicCharacterList: ArrayList<ComicCharacter>? = null
     internal var mSearchedComicCharacterList: ArrayList<ComicCharacter>? = null
 
     internal var mView: CharacterSearchFragment? = null
@@ -36,7 +34,8 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
     fun setUp() {
         mComicsOracleRepo = ComicsOracleRepository(mView?.activity!!)
 
-        mComicCharacterList = ArrayList<ComicCharacter>()
+        mComicCharacterAdapter = ComicCharacterAdapter(mView!!.context)
+
         mSearchedComicCharacterList = ArrayList<ComicCharacter>()
 
 
@@ -51,7 +50,7 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(mView?.context, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                var descr: String? = mComicCharacterAdapter!!.characterList[position].description
+                var descr: String? = mComicCharacterAdapter!!.mCharacterList[position].description
 
                 if (descr == null){
                     descr = ""
@@ -67,7 +66,7 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
     }
 
     fun setCharacterList(characterList: ArrayList<ComicCharacter>) {
-        mComicCharacterList = characterList
+        mComicCharacterAdapter?.setComicCharacters(characterList)
     }
 
 
@@ -99,9 +98,6 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
         this.mView = view
     }
 
-    fun setCharacterAdapter(context: Context, mSearchedComicCharacterList: ArrayList<ComicCharacter>) {
-        mComicCharacterAdapter = ComicCharacterAdapter(context, mSearchedComicCharacterList)
-    }
 
     fun getCharacterAdapter(): ComicCharacterAdapter? {
         return mComicCharacterAdapter

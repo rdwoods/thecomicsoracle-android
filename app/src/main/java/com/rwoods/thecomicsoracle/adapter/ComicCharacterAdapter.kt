@@ -10,20 +10,19 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import java.util.*
 
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class ComicCharacterAdapter(private val mContext: Context, val characterList: ArrayList<ComicCharacter>) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    internal var mCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
-    internal val searchedCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
+class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
+    internal var mCharacterList: ArrayList<ComicCharacter>
+    internal val searchedCharacterList: ArrayList<ComicCharacter>
     private var mItemClickListener: OnItemClickListener? = null
 
 
     init {
-        this.mCharacterList = characterList
-        this.searchedCharacterList.addAll(characterList)
+        this.mCharacterList = ArrayList()
+        this.searchedCharacterList = ArrayList()
     }
 
     fun add(e: ComicCharacter, position: Int) {
@@ -99,16 +98,14 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
         }
     }
 
+    fun setComicCharacters(comicCharacters: ArrayList<ComicCharacter>){
+        mCharacterList = comicCharacters
+        this.searchedCharacterList.addAll(mCharacterList)
+        this.notifyDataSetChanged()
+    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
+
+
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
@@ -120,5 +117,10 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
 
     override fun getItemCount(): Int {
         return searchedCharacterList.size
+    }
+
+    fun clear() {
+        mCharacterList.clear()
+        this.notifyDataSetChanged()
     }
 }

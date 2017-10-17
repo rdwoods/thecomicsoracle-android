@@ -60,8 +60,4 @@ class FavoriteCharacterFragmentViewModel(view: FavoriteCharactersFragment?) : Co
     init {
         this.mView = view
     }
-
-    fun setAdapter(mFavCharacterList: java.util.ArrayList<ComicCharacter>?) {
-        mFavComicCharacterAdapter = ComicCharacterAdapter(mView?.activity!!, this.mFavCharacterList as java.util.ArrayList<ComicCharacter>)
-    }
 }

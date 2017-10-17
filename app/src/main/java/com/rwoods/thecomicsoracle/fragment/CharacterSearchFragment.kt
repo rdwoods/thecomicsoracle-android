@@ -3,7 +3,6 @@ package com.rwoods.thecomicsoracle.fragment
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.os.Build
@@ -89,7 +88,7 @@ class CharacterSearchFragment : Fragment() {
 
                         clearPreviousList()
 
-                        mViewModel?.setCharacterAdapter(activity, mViewModel?.mSearchedComicCharacterList!!)
+                        mViewModel?.setCharacterList(mViewModel?.getCharacterAdapter()?.mCharacterList as ArrayList<ComicCharacter>)
                         mViewModel?.setAdapterOnClick()
 
                     }
@@ -145,10 +144,9 @@ class CharacterSearchFragment : Fragment() {
         try {
             if (!savedData!!.isEmpty()) {
                 mViewModel?.setCharacterList(mViewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<ComicCharacter>)
-                mViewModel?.setCharacterAdapter(activity, mViewModel?.mComicCharacterList!!)
                 mViewModel?.setAdapterOnClick()
                 mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
-                mViewModel?.mComicCharacterAdapter!!!!.notifyDataSetChanged()
+                mCharacterRecyclerView!!.adapter!!.notifyDataSetChanged()
                 mCharacterRecyclerView!!.visibility = View.VISIBLE
             }
         } catch (e: IOException) {
@@ -158,7 +156,7 @@ class CharacterSearchFragment : Fragment() {
 
 
     fun displayCharactersFromRest(comicCharacters: ArrayList<ComicCharacter>?) {
-        mViewModel?.setCharacterAdapter(activity, comicCharacters!!)
+        mViewModel?.setCharacterList(comicCharacters!!)
         mViewModel?.setAdapterOnClick()
 
         mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
@@ -182,7 +180,7 @@ class CharacterSearchFragment : Fragment() {
     }
 
     private fun clearPreviousList() {
-        mViewModel?.mComicCharacterList!!.clear()
+        mViewModel?.getCharacterAdapter()?.clear()
     }
 
 
@@ -205,9 +203,6 @@ class CharacterSearchFragment : Fragment() {
         })
     }
 
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-    }
 
     override fun onDetach() {
         super.onDetach()
@@ -226,7 +221,6 @@ class CharacterSearchFragment : Fragment() {
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val FRAGMENT_NAME = "character"
 
@@ -238,7 +232,6 @@ class CharacterSearchFragment : Fragment() {
 
          * @return A new instance of fragment MadSkilzByCharacterFragment.
          */
-        // TODO: Rename and change types and number of parameters
         fun newInstance(): CharacterSearchFragment {
             val fragment = CharacterSearchFragment()
             val args = Bundle()
