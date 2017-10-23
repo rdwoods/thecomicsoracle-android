@@ -13,11 +13,10 @@ import io.realm.RealmResults
  */
 
 class ComicsOracleRepository(private val mContext: Context) {
-    val helper: SharedPreferencesHelper
+    val helper: SharedPreferencesHelper = SharedPreferencesHelper(mContext)
     internal var mRealm: Realm? = null
 
     init {
-        helper = SharedPreferencesHelper(mContext)
         mRealm = Realm.getDefaultInstance()
     }
 

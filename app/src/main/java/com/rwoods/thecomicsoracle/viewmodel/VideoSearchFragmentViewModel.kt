@@ -18,7 +18,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class VideoSearchFragmentViewModel(view: VideoSearchFragment?) : ComicsOracleBaseViewModel() {
+class VideoSearchFragmentViewModel(view: VideoSearchFragment?) : ComicsOracleBaseViewModel(), Callback<VideoResponse> {
+
 
     internal var mVideoAdapter: VideoAdapter? = null
 
@@ -70,23 +71,7 @@ class VideoSearchFragmentViewModel(view: VideoSearchFragment?) : ComicsOracleBas
         val filteredVideoName = "name:" + searchText
         val videoSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getVideoByName(filteredVideoName)
 
-        videoSearchCall?.enqueue(object : Callback<VideoResponse> {
-
-            override fun onResponse(call: Call<VideoResponse>?, response: Response<VideoResponse>?) {
-
-                val videos = response?.body()?.videos as? ArrayList<Video>
-
-                if (videos == null) {
-                    mView?.displayVideoSearchNotRetrieved()
-                } else {
-                    mView?.displayVideosFromRest(videos)
-                }
-            }
-
-            override fun onFailure(call: Call<VideoResponse>, throwable: Throwable) {
-                mView?.displayVideoSearchFailed()
-            }
-        })
+        videoSearchCall?.enqueue(this)
     }
 
     init {
@@ -100,5 +85,20 @@ class VideoSearchFragmentViewModel(view: VideoSearchFragment?) : ComicsOracleBas
 
     fun getSavedData(): String? {
         return jsonAdapter!!.toJson(mVideoAdapter?.mVideoList)
+    }
+
+    override fun onResponse(call: Call<VideoResponse>?, response: Response<VideoResponse>?) {
+
+        val videos = response?.body()?.videos as? ArrayList<Video>
+
+        if (videos == null) {
+            mView?.displayVideoSearchNotRetrieved()
+        } else {
+            mView?.displayVideosFromRest(videos)
+        }
+    }
+
+    override fun onFailure(call: Call<VideoResponse>, throwable: Throwable) {
+        mView?.displayVideoSearchFailed()
     }
 }

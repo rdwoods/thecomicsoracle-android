@@ -19,7 +19,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.nio.charset.StandardCharsets
 
-class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsOracleBaseViewModel() {
+class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsOracleBaseViewModel(), Callback<ComicCharacterResponse> {
 
     internal var mComicCharacterAdapter: ComicCharacterAdapter? = null
 
@@ -75,23 +75,7 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
         val filteredCharacterName = "name:" + searchText
         val characterSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getCharacterByName(filteredCharacterName)
 
-        characterSearchCall?.enqueue(object : Callback<ComicCharacterResponse> {
-
-            override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
-
-                val comicCharacters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
-
-                if (comicCharacters == null) {
-                    mView?.displayCharacterSearchNotRetrieved()
-                } else {
-                    mView?.displayCharactersFromRest(comicCharacters)
-                }
-            }
-
-            override fun onFailure(call: Call<ComicCharacterResponse>, throwable: Throwable) {
-                mView?.displayCharacterSearchFailed()
-            }
-        })
+        characterSearchCall?.enqueue(this)
     }
 
     init {
@@ -105,5 +89,31 @@ class CharacterSearchFragmentViewModel(view: CharacterSearchFragment?) : ComicsO
 
     fun getSavedData(): String? {
         return jsonAdapter!!.toJson(mComicCharacterAdapter?.mCharacterList)
+    }
+
+    override fun onResponse(call: Call<ComicCharacterResponse>?, response: Response<ComicCharacterResponse>?) {
+        val comicCharacters = response?.body()?.comicCharacters as? ArrayList<ComicCharacter>
+
+        if (comicCharacters == null) {
+            mView?.displayCharacterSearchNotRetrieved()
+        } else {
+            mView?.displayCharactersFromRest(comicCharacters)
+        }
+    }
+
+    override fun onFailure(call: Call<ComicCharacterResponse>?, t: Throwable?) {
+        mView?.displayCharacterSearchFailed()
+    }
+
+    fun setSavedSearchResults(savedSearchTerm: String, savedData: String) {
+        mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData)
+    }
+
+    fun clearSearchResultsPreferences() {
+        mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
+    }
+
+    fun getSavedSearchTerm(): String? {
+        return mComicsOracleRepo?.helper?.savedSearchTerm
     }
 }

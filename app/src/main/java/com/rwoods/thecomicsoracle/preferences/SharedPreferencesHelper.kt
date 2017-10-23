@@ -26,7 +26,7 @@ class SharedPreferencesHelper(private val mContext: Context) {
                 .apply()
     }
 
-    val savedSearchResults: String
+    val savedSearchTerm: String
         get() = mPreferences.getString(mContext.getString(R.string.saved_character_search_term), "")
 
 

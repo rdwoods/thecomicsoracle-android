@@ -50,7 +50,7 @@ class VideoSearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         mComicsOracleRepo = ComicsOracleRepository(context)
-        savedSearchTerm = mComicsOracleRepo!!.helper.savedSearchResults
+        savedSearchTerm = mComicsOracleRepo!!.helper.savedSearchTerm
 
         if (arguments != null) {
             val fragmentName = arguments.getString(FRAGMENT_NAME)
@@ -144,7 +144,7 @@ class VideoSearchFragment : Fragment() {
     }
 
     private fun restorePreviousSearchResults() {
-        val savedData = mComicsOracleRepo?.helper?.savedSearchResults
+        val savedData = mComicsOracleRepo?.helper?.savedSearchTerm
 
         try {
             if (!savedData!!.isEmpty()) {

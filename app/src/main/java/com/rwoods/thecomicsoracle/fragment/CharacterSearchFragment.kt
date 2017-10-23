@@ -131,7 +131,7 @@ class CharacterSearchFragment : Fragment() {
 
         mViewModel!!.setUp()
 
-        savedSearchTerm = mViewModel?.mComicsOracleRepo!!.helper.savedSearchResults
+        savedSearchTerm = mViewModel?.getSavedSearchTerm()
 
         restorePreviousSearchResults()
 
@@ -139,7 +139,7 @@ class CharacterSearchFragment : Fragment() {
     }
 
     private fun restorePreviousSearchResults() {
-        val savedData = mViewModel?.mComicsOracleRepo?.helper?.savedSearchResults
+        val savedData = mViewModel?.getSavedData()
 
         try {
             if (!savedData!!.isEmpty()) {
@@ -161,13 +161,13 @@ class CharacterSearchFragment : Fragment() {
 
         mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
 
-        mViewModel?.mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
+        mViewModel?.clearSearchResultsPreferences()
 
         try {
             val savedSearchTerm = mCharacterSearchView!!.query.toString()
             val savedData = mViewModel!!.getSavedData()
 
-            mViewModel?.mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData!!)
+            mViewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
 
         } catch (e: Exception) {
             e.printStackTrace()
