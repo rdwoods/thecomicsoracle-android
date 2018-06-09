@@ -15,26 +15,26 @@ import com.rwoods.thecomicsoracle.model.Video
  * Created by rahmanwoods on 5/12/15.
  */
 class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video>) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
-    var mVideoList: ArrayList<Video>  = ArrayList()
-    var searchedVideoList: ArrayList<Video> = ArrayList()
-    private var mItemClickListener: OnItemClickListener? = null
+    var videos: ArrayList<Video>? = ArrayList()
+    var serachedVideos: ArrayList<Video> = ArrayList()
+    private var clickListener: OnItemClickListener? = null
 
 
     init {
-        this.mVideoList = videoList
-        this.searchedVideoList.addAll(this.videoList)
+        this.videos = videoList
+        this.serachedVideos.addAll(this.videoList)
     }
 
     fun add(e: Video, position: Int) {
         var position = position
         position = if (position == -1) itemCount else position
-        searchedVideoList.add(position, e)
+        serachedVideos.add(position, e)
         notifyItemInserted(position)
     }
 
     fun remove(position: Int) {
         if (position < itemCount) {
-            searchedVideoList.removeAt(position)
+            serachedVideos.removeAt(position)
             notifyItemRemoved(position)
         }
     }
@@ -51,8 +51,8 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
         }
 
         override fun onClick(v: View) {
-            if (mItemClickListener != null) {
-                mItemClickListener!!.onItemClick(v, tvVideoTitle.tag as Int)
+            if (clickListener != null) {
+                clickListener!!.onItemClick(v, tvVideoTitle.tag as Int)
             }
         }
     }
@@ -63,8 +63,8 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
-        val image = searchedVideoList[position].image
-        val characterName = searchedVideoList[position].name
+        val image = serachedVideos[position].image
+        val characterName = serachedVideos[position].name
 
         if (characterName != null) {
             holder.tvVideoTitle.tag = position
@@ -100,11 +100,11 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
     }
 
     fun setOnItemClickListener(itemClickListener: OnItemClickListener) {
-        mItemClickListener = itemClickListener
+        clickListener = itemClickListener
     }
 
 
     override fun getItemCount(): Int {
-        return searchedVideoList.size
+        return serachedVideos.size
     }
 }

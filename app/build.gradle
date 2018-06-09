@@ -5,13 +5,13 @@ apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.rwoods.thecomicsoracle"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -90,12 +90,16 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    def lifecycle_version = "1.1.1"
 
     // Android Support dependencies
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:multidex:1.0.3'
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:design:27.1.1'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0'
+
+    // Android LifeCycle
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
 
     // Square dependencies
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -136,10 +140,10 @@ dependencies {
     testCompile "org.mockito:mockito-core:2.7.22"
 
     // Android JUnit Runner
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
 
     // JUnit4 Rules
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test:rules:1.0.2'
 
     // Espresso core
     androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.2'){
@@ -155,6 +159,6 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    androidTestCompile 'com.android.support:support-annotations:27.1.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

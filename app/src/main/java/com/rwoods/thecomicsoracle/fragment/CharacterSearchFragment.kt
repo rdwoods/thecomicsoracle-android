@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
 import android.app.SearchManager
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -17,9 +18,15 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import com.rwoods.thecomicsoracle.viewmodel.CharacterSearchFragmentViewModel
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import com.rwoods.thecomicsoracle.activity.CharacterDescriptionWebViewActivity
+import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
+import com.rwoods.thecomicsoracle.util.Constants
+import java.nio.charset.StandardCharsets
+
 
 /**
  * A simple [Fragment] subclass.
@@ -28,25 +35,29 @@ import java.io.IOException
  */
 class CharacterSearchFragment : Fragment() {
 
-    private var mCharacterRecyclerView: RecyclerView? = null
+    private var characterRecyclerView: RecyclerView? = null
+
+    private var characterAdapter: ComicCharacterAdapter? = null
 
     private var mProgressBar: ProgressBar? = null
-    private var mCharacterSearchView: SearchView? = null
+    private var characterSearchView: SearchView? = null
 
     private var savedSearchTerm: String? = null
+    private var comicCharacterObserver: Observer<ArrayList<ComicCharacter>>? = null
+
 
     val fragmentName: String
         get() = FRAGMENT_NAME
 
 
-    private var mViewModel: CharacterSearchFragmentViewModel? = null
+    private var viewModel: CharacterSearchFragmentViewModel? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (arguments != null) {
-            val fragmentName = arguments.getString(FRAGMENT_NAME)
+            val fragmentName = arguments?.getString(FRAGMENT_NAME)
         }
 
         setHasOptionsMenu(true)
@@ -56,28 +67,28 @@ class CharacterSearchFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         //MenuItem searchItem = menu.findItem(R.id.action_search);
 
-        val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
-        mCharacterSearchView = MenuItemCompat.getActionView(menu!!.findItem(R.id.action_search)) as android.support.v7.widget.SearchView
+        characterSearchView = MenuItemCompat.getActionView(menu!!.findItem(R.id.action_search)) as android.support.v7.widget.SearchView
 
-        if (mCharacterSearchView != null) {
+        if (characterSearchView != null) {
 
             if (!savedSearchTerm!!.isEmpty()) {
-                mCharacterSearchView!!.setQuery(savedSearchTerm, false)
+                characterSearchView!!.setQuery(savedSearchTerm, false)
             }
 
-            mCharacterSearchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName))
+            characterSearchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
 
-            mCharacterSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            characterSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(searchText: String): Boolean {
 
                     clearPreviousList()
 
                     showProgress(true)
 
-                    mViewModel?.getCharactersFromRest(searchText.trim { it <= ' ' })
+                    viewModel?.getCharactersFromRest(searchText.trim { it <= ' ' })
 
-                    mCharacterSearchView!!.clearFocus()
+                    characterSearchView!!.clearFocus()
 
                     return false
                 }
@@ -87,9 +98,9 @@ class CharacterSearchFragment : Fragment() {
                     if (searchText.trim { it <= ' ' }.isEmpty()) {
 
                         clearPreviousList()
-
-                        mViewModel?.setCharacterList(mViewModel?.getCharacterAdapter()?.mCharacterList as ArrayList<ComicCharacter>)
-                        mViewModel?.setAdapterOnClick()
+/*
+                        viewModel?.setCharacterList(viewModel?.getCharacterAdapter()?.mCharacterList as ArrayList<ComicCharacter>)
+                        setAdapterOnClick()*/
 
                     }
 
@@ -97,7 +108,7 @@ class CharacterSearchFragment : Fragment() {
                 }
             })
 
-            mCharacterSearchView!!.setOnCloseListener {
+            characterSearchView!!.setOnCloseListener {
                 clearPreviousList()
 
                 false
@@ -114,24 +125,46 @@ class CharacterSearchFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val rootView = inflater!!.inflate(R.layout.fragment_character, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_character, container, false)
 
-        mViewModel = CharacterSearchFragmentViewModel(this)
+        viewModel = ViewModelProviders.of(this).get(CharacterSearchFragmentViewModel::class.java)
+        viewModel?.comicCharacters?.observe(this, Observer { comicCharacters ->
+
+            characterRecyclerView!!.adapter = characterAdapter;
+
+            viewModel?.clearSearchResultsPreferences()
+
+            try {
+                val savedSearchTerm = characterSearchView!!.query.toString()
+                val savedData = viewModel!!.getSavedData()
+
+                viewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+
+            showProgress(false)
+            characterRecyclerView!!.visibility = View.VISIBLE
+        })
 
         //Your RecyclerView
-        mCharacterRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
-        mCharacterRecyclerView!!.setHasFixedSize(true)
-        mCharacterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        mCharacterRecyclerView!!.visibility = View.GONE
+        characterRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
+        characterRecyclerView!!.setHasFixedSize(true)
+        characterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
+        characterRecyclerView!!.visibility = View.GONE
 
         mProgressBar = rootView.findViewById(R.id.search_character_progress) as ProgressBar
 
-        mViewModel!!.setUp()
+        viewModel!!.setUp()
 
-        savedSearchTerm = mViewModel?.getSavedSearchTerm()
+        savedSearchTerm = viewModel?.getSavedSearchTerm()
 
         restorePreviousSearchResults()
 
@@ -139,35 +172,54 @@ class CharacterSearchFragment : Fragment() {
     }
 
     private fun restorePreviousSearchResults() {
-        val savedData = mViewModel?.getSavedData()
+        val savedData = viewModel?.getSavedData()
 
         try {
             if (!savedData!!.isEmpty()) {
-                mViewModel?.setCharacterList(mViewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<ComicCharacter>)
-                mViewModel?.setAdapterOnClick()
-                mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
-                mCharacterRecyclerView!!.adapter!!.notifyDataSetChanged()
-                mCharacterRecyclerView!!.visibility = View.VISIBLE
+                setAdapterOnClick()
+                characterRecyclerView!!.adapter = characterAdapter
+                characterRecyclerView!!.adapter!!.notifyDataSetChanged()
+                characterRecyclerView!!.visibility = View.VISIBLE
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
+    private fun setAdapterOnClick() {
+        characterAdapter!!.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
+                val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
+                val bundle = Bundle()
+                var descr: String? = characterAdapter!!.characterList[position].description
+
+                if (descr == null){
+                    descr = ""
+                }
+
+                val byte: ByteArray? = descr.toByteArray(StandardCharsets.UTF_8)
+                bundle.putByteArray(Constants.CHARACTER, byte!!)
+                intent.putExtras(bundle)
+
+                startActivity(intent)
+            }
+        })
+    }
+
 
     fun displayCharactersFromRest(comicCharacters: ArrayList<ComicCharacter>?) {
-        mViewModel?.setCharacterList(comicCharacters!!)
-        mViewModel?.setAdapterOnClick()
+        setAdapterOnClick()
 
-        mCharacterRecyclerView!!.adapter = mViewModel?.mComicCharacterAdapter!!
+        characterRecyclerView!!.adapter = characterAdapter
 
-        mViewModel?.clearSearchResultsPreferences()
+        viewModel?.clearSearchResultsPreferences()
 
         try {
-            val savedSearchTerm = mCharacterSearchView!!.query.toString()
-            val savedData = mViewModel!!.getSavedData()
+            val savedSearchTerm = characterSearchView!!.query.toString()
+            val savedData = viewModel!!.getSavedData()
 
-            mViewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
+            viewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -175,12 +227,12 @@ class CharacterSearchFragment : Fragment() {
 
 
         showProgress(false)
-        mCharacterRecyclerView!!.visibility = View.VISIBLE
+        characterRecyclerView!!.visibility = View.VISIBLE
 
     }
 
     private fun clearPreviousList() {
-        mViewModel?.getCharacterAdapter()?.clear()
+        characterAdapter!!.clear()
     }
 
 
@@ -245,13 +297,13 @@ class CharacterSearchFragment : Fragment() {
     }
 
     fun displayCharacterSearchFailed() {
-        mCharacterRecyclerView!!.visibility = View.GONE
+        characterRecyclerView!!.visibility = View.GONE
         mProgressBar!!.visibility = View.VISIBLE
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             Toast.makeText(activity, "Could not get character list", Toast.LENGTH_LONG).show()
 
             showProgress(false)
-            mCharacterRecyclerView!!.visibility = View.VISIBLE
+            characterRecyclerView!!.visibility = View.VISIBLE
         }
     }
 }

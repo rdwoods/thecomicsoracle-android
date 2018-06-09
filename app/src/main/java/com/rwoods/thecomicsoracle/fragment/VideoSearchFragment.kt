@@ -5,7 +5,10 @@ import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.SearchManager
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,9 +20,11 @@ import android.view.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.rwoods.thecomicsoracle.R
+import com.rwoods.thecomicsoracle.activity.VideoViewActivity
+import com.rwoods.thecomicsoracle.adapter.VideoAdapter
 import com.rwoods.thecomicsoracle.model.Video
 import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
-import com.rwoods.thecomicsoracle.viewmodel.VideoSearchFragmentViewModel
+import com.rwoods.thecomicsoracle.util.Constants
 import org.slf4j.LoggerFactory
 import java.io.IOException
 
@@ -30,10 +35,12 @@ import java.io.IOException
  */
 class VideoSearchFragment : Fragment() {
 
-    private var mVideoRecyclerView: RecyclerView? = null
+    private var videoRecyclerView: RecyclerView? = null
+
+    private var videoAdapter: VideoAdapter? = null
 
     private var mProgressBar: ProgressBar? = null
-    private var mVideoSearchView: SearchView? = null
+    private var videoSearchView: SearchView? = null
 
     private var mComicsOracleRepo: ComicsOracleRepository? = null
 
@@ -43,17 +50,16 @@ class VideoSearchFragment : Fragment() {
         get() = FRAGMENT_NAME
 
 
-    private var mViewModel: VideoSearchFragmentViewModel? = null
+    private var viewModel: VideoSearchFragmentViewModel? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mComicsOracleRepo = ComicsOracleRepository(context)
-        savedSearchTerm = mComicsOracleRepo!!.helper.savedSearchTerm
+        //savedSearchTerm = viewModel.helper.savedSearchTerm
 
         if (arguments != null) {
-            val fragmentName = arguments.getString(FRAGMENT_NAME)
+            val fragmentName = arguments!!.getString(FRAGMENT_NAME)
         }
 
         setHasOptionsMenu(true)
@@ -63,48 +69,48 @@ class VideoSearchFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         //MenuItem searchItem = menu.findItem(R.id.action_search);
 
-        val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
-        mVideoSearchView = MenuItemCompat.getActionView(menu!!.findItem(R.id.action_search)) as android.support.v7.widget.SearchView
+        videoSearchView = MenuItemCompat.getActionView(menu!!.findItem(R.id.action_search)) as android.support.v7.widget.SearchView
 
-        if (mVideoSearchView != null) {
+        if (videoSearchView != null) {
 
             if (!savedSearchTerm!!.isEmpty()) {
-                mVideoSearchView!!.setQuery(savedSearchTerm, false)
+                videoSearchView!!.setQuery(savedSearchTerm, false)
             }
 
-            mVideoSearchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName))
+            videoSearchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
 
-            mVideoSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            videoSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(searchText: String): Boolean {
 
                     clearPreviousList()
 
                     showProgress(true)
 
-                    mViewModel?.getVideosFromRest(searchText.trim { it <= ' ' })
+                    viewModel?.getVideosFromRest(searchText.trim { it <= ' ' })
 
-                    mVideoSearchView!!.clearFocus()
+                    videoSearchView!!.clearFocus()
 
                     return false
                 }
 
                 override fun onQueryTextChange(searchText: String): Boolean {
 
-                    if (searchText.trim { it <= ' ' }.isEmpty()) {
+                    /*if (searchText.trim { it <= ' ' }.isEmpty()) {
 
                         clearPreviousList()
 
-                        mViewModel?.setVideoAdapter(context, mViewModel?.mSearchedVideoList!!)
-                        mViewModel?.setAdapterOnClick()
+                        context?.let { viewModel?.setVideoAdapter(it, viewModel?.searchedVideoList!!) }
+                        viewModel?.setAdapterOnClick()
 
-                    }
+                    }*/
 
                     return false
                 }
             })
 
-            mVideoSearchView!!.setOnCloseListener {
+            videoSearchView!!.setOnCloseListener {
                 clearPreviousList()
 
                 false
@@ -121,26 +127,70 @@ class VideoSearchFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val rootView = inflater!!.inflate(R.layout.fragment_character, container, false)
 
-        mViewModel = VideoSearchFragmentViewModel(this)
+        viewModel = ViewModelProviders.of(this).get(VideoSearchFragmentViewModel::class.java)
 
         //Your RecyclerView
-        mVideoRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
-        mVideoRecyclerView!!.setHasFixedSize(true)
-        mVideoRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        mVideoRecyclerView!!.visibility = View.GONE
+        videoRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
+        videoRecyclerView!!.setHasFixedSize(true)
+        videoRecyclerView!!.layoutManager = LinearLayoutManager(activity)
+        videoRecyclerView!!.visibility = View.GONE
 
         mProgressBar = rootView.findViewById(R.id.search_character_progress) as ProgressBar
 
-        mViewModel!!.setUp()
+        viewModel!!.setUp()
+
+        viewModel?.videos?.observe(this, Observer { comicsVideos ->
+
+            videoAdapter!!.videos = comicsVideos
+            setAdapterOnClick()
+
+            videoRecyclerView!!.adapter = videoAdapter
+
+            mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
+
+            try {
+                val savedSearchTerm = videoSearchView!!.query.toString()
+                val savedData = viewModel!!.getSavedData()
+
+                mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData!!)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+
+            showProgress(false)
+            videoRecyclerView!!.visibility = View.VISIBLE
+        })
 
         restorePreviousSearchResults()
 
         return rootView
+    }
+
+    private fun setAdapterOnClick(){
+        videoAdapter!!.setOnItemClickListener(object: VideoAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
+                val intent = Intent(context, VideoViewActivity::class.java)
+                val bundle = Bundle()
+                var url: String? = videoAdapter!!.videos?.get(position)?.highUrl
+
+                if (url == null){
+                    url = ""
+                }
+
+                bundle.putString(Constants.VIDEO_URL, url)
+                intent.putExtras(bundle)
+
+                startActivity(intent)
+            }
+        })
     }
 
     private fun restorePreviousSearchResults() {
@@ -148,12 +198,11 @@ class VideoSearchFragment : Fragment() {
 
         try {
             if (!savedData!!.isEmpty()) {
-                mViewModel?.setVideoList(mViewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<Video>)
-                mViewModel?.setVideoAdapter(context, mViewModel?.mVideoList!!)
-                mViewModel?.setAdapterOnClick()
-                mVideoRecyclerView!!.adapter = mViewModel?.mVideoAdapter!!
-                mViewModel?.mVideoAdapter!!.notifyDataSetChanged()
-                mVideoRecyclerView!!.visibility = View.VISIBLE
+                viewModel?.setVideoList(viewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<Video>)
+                setAdapterOnClick()
+                videoRecyclerView!!.adapter = videoAdapter
+                videoRecyclerView!!.adapter!!.notifyDataSetChanged()
+                videoRecyclerView!!.visibility = View.VISIBLE
             }
         } catch (e: IOException) {
             e.printStackTrace()
@@ -162,16 +211,15 @@ class VideoSearchFragment : Fragment() {
 
 
     fun displayVideosFromRest(comicVideos: ArrayList<Video>?) {
-        mViewModel?.setVideoAdapter(context, comicVideos!!)
-        mViewModel?.setAdapterOnClick()
-
-        mVideoRecyclerView!!.adapter = mViewModel?.mVideoAdapter!!
+        setAdapterOnClick()
+        videoRecyclerView!!.adapter = videoAdapter
+        videoRecyclerView!!.adapter!!.notifyDataSetChanged()
 
         mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
 
         try {
-            val savedSearchTerm = mVideoSearchView!!.query.toString()
-            val savedData = mViewModel!!.getSavedData()
+            val savedSearchTerm = videoSearchView!!.query.toString()
+            val savedData = viewModel!!.getSavedData()
 
             mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData!!)
 
@@ -181,12 +229,12 @@ class VideoSearchFragment : Fragment() {
 
 
         showProgress(false)
-        mVideoRecyclerView!!.visibility = View.VISIBLE
+        videoRecyclerView!!.visibility = View.VISIBLE
 
     }
 
     private fun clearPreviousList() {
-        mViewModel?.mVideoList!!.clear()
+        viewModel?.videosList!!.clear()
     }
 
 
@@ -234,13 +282,13 @@ class VideoSearchFragment : Fragment() {
     }
 
     fun displayVideoSearchFailed() {
-        mVideoRecyclerView!!.visibility = View.GONE
+        videoRecyclerView!!.visibility = View.GONE
         mProgressBar!!.visibility = View.VISIBLE
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             Toast.makeText(context, "Could not get video list", Toast.LENGTH_LONG).show()
 
             showProgress(false)
-            mVideoRecyclerView!!.visibility = View.VISIBLE
+            videoRecyclerView!!.visibility = View.VISIBLE
         }
     }
 

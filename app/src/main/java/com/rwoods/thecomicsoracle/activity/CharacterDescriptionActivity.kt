@@ -105,8 +105,8 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
                             val empty = ContextCompat.getDrawable(this@CharacterDescriptionActivity, R.drawable.page_overview_50px)
 
                             d.addLevel(0, 0, empty)
-                            d.setBounds(0, 0, empty.intrinsicWidth, empty.intrinsicHeight)
-                            LoadHtmlTask(this@CharacterDescriptionActivity, source, d).execute(TextViewImageStore(tvCharacterDesc, empty.intrinsicWidth, empty.intrinsicHeight))
+                            empty?.intrinsicWidth?.let { d.setBounds(0, 0, it, empty.intrinsicHeight) }
+                            LoadHtmlTask(this@CharacterDescriptionActivity, source, d).execute(TextViewImageStore(tvCharacterDesc, empty!!.intrinsicWidth, empty.intrinsicHeight))
 
                             d
                         }, null)

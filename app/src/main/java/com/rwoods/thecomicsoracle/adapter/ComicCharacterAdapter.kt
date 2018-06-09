@@ -15,13 +15,13 @@ import com.rwoods.thecomicsoracle.model.ComicCharacter
  * Created by rahmanwoods on 5/12/15.
  */
 class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    internal var mCharacterList: ArrayList<ComicCharacter>
+    internal var characterList: ArrayList<ComicCharacter>
     internal val searchedCharacterList: ArrayList<ComicCharacter>
-    private var mItemClickListener: OnItemClickListener? = null
+    private var clickListener: OnItemClickListener? = null
 
 
     init {
-        this.mCharacterList = ArrayList()
+        this.characterList = ArrayList()
         this.searchedCharacterList = ArrayList()
     }
 
@@ -51,8 +51,8 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
         }
 
         override fun onClick(v: View) {
-            if (mItemClickListener != null) {
-                mItemClickListener!!.onItemClick(v, tvCharacterName.tag as Int)
+            if (clickListener != null) {
+                clickListener!!.onItemClick(v, tvCharacterName.tag as Int)
             }
         }
     }
@@ -99,8 +99,8 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     fun setComicCharacters(comicCharacters: ArrayList<ComicCharacter>){
-        mCharacterList = comicCharacters
-        this.searchedCharacterList.addAll(mCharacterList)
+        characterList = comicCharacters
+        this.searchedCharacterList.addAll(characterList)
         this.notifyDataSetChanged()
     }
 
@@ -111,7 +111,7 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     fun setOnItemClickListener(itemClickListener: OnItemClickListener) {
-        mItemClickListener = itemClickListener
+        clickListener = itemClickListener
     }
 
 
@@ -120,7 +120,7 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     fun clear() {
-        mCharacterList.clear()
+        characterList.clear()
         this.notifyDataSetChanged()
     }
 }

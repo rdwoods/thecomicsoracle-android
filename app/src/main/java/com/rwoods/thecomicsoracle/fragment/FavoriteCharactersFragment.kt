@@ -1,6 +1,7 @@
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -9,7 +10,6 @@ import android.view.*
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import com.rwoods.thecomicsoracle.viewmodel.FavoriteCharacterFragmentViewModel
 import io.realm.RealmResults
 
 /**
@@ -21,7 +21,7 @@ class FavoriteCharactersFragment : Fragment() {
     private var mFavCharacterRecyclerView: RecyclerView? = null
     private var fragmentName: String? = null
 
-    private var mViewModel: FavoriteCharacterFragmentViewModel? = null
+    private var viewModel: FavoriteCharacterFragmentViewModel? = null
 
     fun getFragmentName(): String {
         return FRAGMENT_NAME
@@ -31,7 +31,7 @@ class FavoriteCharactersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            fragmentName = arguments.getString(FRAGMENT_NAME)
+            fragmentName = arguments!!.getString(FRAGMENT_NAME)
         }
 
         setHasOptionsMenu(true)
@@ -45,21 +45,21 @@ class FavoriteCharactersFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val rootView = inflater!!.inflate(R.layout.fragment_fav_character, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_fav_character, container, false)
 
-        mViewModel = FavoriteCharacterFragmentViewModel(this)
+        viewModel = ViewModelProviders.of(this).get(FavoriteCharacterFragmentViewModel::class.java)
 
         //Your RecyclerView
         mFavCharacterRecyclerView = rootView.findViewById(R.id.fav_character_recycler_view) as RecyclerView
         mFavCharacterRecyclerView!!.setHasFixedSize(true)
         mFavCharacterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
 
-        mViewModel!!.setUp()
+        viewModel!!.setUp()
 
-        val favoriteCharacters = mViewModel?.mComicsOracleRepo?.getFavoritesFromDb()
+        val favoriteCharacters = viewModel?.comicsOracleRepo?.getFavoritesFromDb()
 
         displayFavorites(favoriteCharacters)
 
@@ -71,20 +71,20 @@ class FavoriteCharactersFragment : Fragment() {
 
         if (!favoriteCharacters?.isEmpty()!!) {
 
-            mViewModel?.mFavCharacterList!!.addAll(favoriteCharacters)
+            viewModel?.favoriteCharacters!!.addAll(favoriteCharacters)
 
-            mViewModel?.mFavComicCharacterAdapter?.setComicCharacters(mViewModel?.mFavCharacterList!!)
+            viewModel?.mFavComicCharacterAdapter?.setComicCharacters(viewModel?.favoriteCharacters!!)
 
             mFavCharacterRecyclerView!!.adapter = mFavComicCharacterAdapter
 
-            mViewModel?.setAdapterOnClick()
+            viewModel?.setAdapterOnClick()
         }
     }
 
 
 
     private fun clearPreviousList() {
-        mViewModel?.mFavCharacterList!!.clear()
+        viewModel?.favoriteCharacters!!.clear()
     }
 
 

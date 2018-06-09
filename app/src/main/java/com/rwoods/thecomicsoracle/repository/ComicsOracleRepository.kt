@@ -1,5 +1,6 @@
 package com.rwoods.thecomicsoracle.repository
 
+import android.app.Application
 import android.content.Context
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.preferences.SharedPreferencesHelper
@@ -12,8 +13,8 @@ import io.realm.RealmResults
 
  */
 
-class ComicsOracleRepository(private val mContext: Context) {
-    val helper: SharedPreferencesHelper = SharedPreferencesHelper(mContext)
+class ComicsOracleRepository(application: Application) {
+    val helper: SharedPreferencesHelper = SharedPreferencesHelper(application)
     internal var mRealm: Realm? = null
 
     init {
