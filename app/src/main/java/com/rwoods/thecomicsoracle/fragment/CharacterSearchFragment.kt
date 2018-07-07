@@ -134,24 +134,30 @@ class CharacterSearchFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(CharacterSearchFragmentViewModel::class.java)
         viewModel?.comicCharacters?.observe(this, Observer { comicCharacters ->
-
-            characterRecyclerView!!.adapter = characterAdapter;
-
-            viewModel?.clearSearchResultsPreferences()
-
-            try {
-                val savedSearchTerm = characterSearchView!!.query.toString()
-                val savedData = viewModel!!.getSavedData()
-
-                viewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-
             showProgress(false)
-            characterRecyclerView!!.visibility = View.VISIBLE
+
+            if (comicCharacters != null) {
+                characterAdapter!!.populateAdapter(comicCharacters)
+                characterRecyclerView!!.adapter = characterAdapter;
+
+                viewModel?.clearSearchResultsPreferences()
+
+                try {
+                    val savedSearchTerm = characterSearchView!!.query.toString()
+                    val savedData = viewModel!!.getSavedData()
+
+                    viewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+
+                showProgress(false)
+                characterRecyclerView!!.visibility = View.VISIBLE
+            } else {
+
+            }
         })
 
         //Your RecyclerView
@@ -192,7 +198,7 @@ class CharacterSearchFragment : Fragment() {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                var descr: String? = characterAdapter!!.characterList[position].description
+                var descr: String? = characterAdapter!!.characters[position].description
 
                 if (descr == null){
                     descr = ""
@@ -207,29 +213,6 @@ class CharacterSearchFragment : Fragment() {
         })
     }
 
-
-    fun displayCharactersFromRest(comicCharacters: ArrayList<ComicCharacter>?) {
-        setAdapterOnClick()
-
-        characterRecyclerView!!.adapter = characterAdapter
-
-        viewModel?.clearSearchResultsPreferences()
-
-        try {
-            val savedSearchTerm = characterSearchView!!.query.toString()
-            val savedData = viewModel!!.getSavedData()
-
-            viewModel?.setSavedSearchResults(savedSearchTerm, savedData!!)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-
-        showProgress(false)
-        characterRecyclerView!!.visibility = View.VISIBLE
-
-    }
 
     private fun clearPreviousList() {
         characterAdapter!!.clear()
@@ -255,22 +238,6 @@ class CharacterSearchFragment : Fragment() {
         })
     }
 
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
 
     companion object {
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

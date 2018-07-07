@@ -15,13 +15,13 @@ import com.rwoods.thecomicsoracle.model.ComicCharacter
  * Created by rahmanwoods on 5/12/15.
  */
 class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    internal var characterList: ArrayList<ComicCharacter>
+    internal var characters: ArrayList<ComicCharacter>
     internal val searchedCharacterList: ArrayList<ComicCharacter>
     private var clickListener: OnItemClickListener? = null
 
 
     init {
-        this.characterList = ArrayList()
+        this.characters = ArrayList()
         this.searchedCharacterList = ArrayList()
     }
 
@@ -30,6 +30,10 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
         position = if (position == -1) itemCount else position
         searchedCharacterList.add(position, e)
         notifyItemInserted(position)
+    }
+
+    fun populateAdapter(cc: ArrayList<ComicCharacter>){
+        characters = cc;
     }
 
     fun remove(position: Int) {
@@ -99,8 +103,8 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     fun setComicCharacters(comicCharacters: ArrayList<ComicCharacter>){
-        characterList = comicCharacters
-        this.searchedCharacterList.addAll(characterList)
+        characters = comicCharacters
+        this.searchedCharacterList.addAll(characters)
         this.notifyDataSetChanged()
     }
 
@@ -120,7 +124,7 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     fun clear() {
-        characterList.clear()
+        characters.clear()
         this.notifyDataSetChanged()
     }
 }

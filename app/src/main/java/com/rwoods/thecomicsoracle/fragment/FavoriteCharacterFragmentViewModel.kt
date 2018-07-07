@@ -39,7 +39,7 @@ class FavoriteCharacterFragmentViewModel(internal var application: Application) 
             override fun onItemClick(view: View, position: Int) {
                 val intent = Intent(mView?.activity, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                var descr: String? = mFavComicCharacterAdapter!!.characterList[position].description
+                var descr: String? = mFavComicCharacterAdapter!!.characters[position].description
 
                 if (descr == null){
                     descr = ""
