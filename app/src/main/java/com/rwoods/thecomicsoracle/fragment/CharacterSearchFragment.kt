@@ -146,7 +146,7 @@ class CharacterSearchFragment : Fragment() {
 
                 characterRecyclerView!!.visibility = View.VISIBLE
             } else {
-
+                displayCharacterSearchFailed()
             }
         })
 

@@ -96,16 +96,6 @@ class VideoSearchFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(searchText: String): Boolean {
-
-                    /*if (searchText.trim { it <= ' ' }.isEmpty()) {
-
-                        clearPreviousList()
-
-                        context?.let { viewModel?.setVideoAdapter(it, viewModel?.searchedVideoList!!) }
-                        viewModel?.setAdapterOnClick()
-
-                    }*/
-
                     return false
                 }
             })
@@ -118,13 +108,6 @@ class VideoSearchFragment : Fragment() {
         }
 
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -149,13 +132,15 @@ class VideoSearchFragment : Fragment() {
 
         viewModel?.videos?.observe(this, Observer { comicsVideos ->
 
+            showProgress(false)
+            videoRecyclerView!!.visibility = View.VISIBLE
+
             if (comicsVideos != null) {
                 videoAdapter!!.populateAdapter(comicsVideos)
                 setAdapterOnClick()
+            } else {
+                displayVideoSearchFailed()
             }
-
-            showProgress(false)
-            videoRecyclerView!!.visibility = View.VISIBLE
         })
 
         restorePreviousSearchResults()
@@ -247,25 +232,6 @@ class VideoSearchFragment : Fragment() {
         })
     }
 
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
 
     fun displayVideoSearchNotRetrieved() {
         Toast.makeText(context, "Search of characters failed.", Toast.LENGTH_LONG).show()
