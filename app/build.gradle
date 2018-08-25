@@ -21,13 +21,13 @@ android {
         release {
             minifyEnabled false
             buildConfigField("String", "ENV", '"https://comicvine.gamespot.com/api/"')
-            buildConfigField("String", "API_KEY", ComicsVineApiKey)
+            buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
             buildConfigField("String", "ENV", '"https://comicvine.gamespot.com/api/"')
-            buildConfigField("String", "API_KEY", ComicsVineApiKey)
+            buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
             applicationIdSuffix ".debug"
         }
 

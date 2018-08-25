@@ -23,7 +23,7 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
 
     internal var jsonAdapter: JsonAdapter<List<ComicCharacter>>? = null
 
-    internal var comicCharacters: MutableLiveData<ArrayList<ComicCharacter>>? = null
+    internal var comicCharacters =  MutableLiveData<ArrayList<ComicCharacter>>()
 
     internal var savedCharacters: ArrayList<ComicCharacter>? = null
 
@@ -51,21 +51,21 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
         return jsonAdapter!!.toJson(savedCharacters)
     }
 
-    override fun onResponse(call: Call<ComicCharacterResponse>?, response: Response<ComicCharacterResponse>?) {
-        val comicCharacters = response?.body()?.comicCharacters as? ArrayList<ComicCharacter>
+    override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
+        val characters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
 
-        if (comicCharacters == null) {
-            this.comicCharacters?.postValue(null)
+        if (characters != null) {
+            savedCharacters = characters;
+            comicCharacters.setValue(characters)
             //mView?.displayCharacterSearchNotRetrieved()
         } else {
             //mView?.displayCharactersFromRest(comicCharacters)
-            savedCharacters = comicCharacters;
-            this.comicCharacters?.postValue(comicCharacters)
+            comicCharacters.setValue(null)
         }
     }
 
-    override fun onFailure(call: Call<ComicCharacterResponse>?, t: Throwable?) {
-        comicCharacters?.postValue(null)
+    override fun onFailure(call: Call<ComicCharacterResponse>, t: Throwable) {
+        comicCharacters.setValue(null)
     }
 
     fun setSavedSearchResults(savedSearchTerm: String, savedData: String) {

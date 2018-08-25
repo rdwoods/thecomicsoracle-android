@@ -24,7 +24,7 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
 
     internal var jsonAdapter: JsonAdapter<List<Video>>? = null
 
-    internal var videos: MutableLiveData<ArrayList<Video>>? = null
+    internal var videos = MutableLiveData<ArrayList<Video>>()
 
     fun setUp() {
         comicsOracleRepo = ComicsOracleRepository(application)
@@ -44,7 +44,7 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
 
     fun getVideosFromRest(searchText: String) {
 
-        val filteredVideoName = "name:" + searchText
+        val filteredVideoName = "name:$searchText"
         val videoSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getVideoByName(filteredVideoName)
 
         videoSearchCall?.enqueue(this)
@@ -55,18 +55,18 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
         return jsonAdapter!!.toJson(videosList)
     }
 
-    override fun onResponse(call: Call<VideoResponse>?, response: Response<VideoResponse>) {
+    override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
 
         val videoResponse = response.body()?.videos as? ArrayList<Video>
 
-        if (videoResponse == null) {
-            videos!!.postValue(null)
+        if (videoResponse != null) {
+            videos.setValue(videoResponse)
         } else {
-            videos!!.postValue(videoResponse)
+            videos.setValue(null)
         }
     }
 
     override fun onFailure(call: Call<VideoResponse>, throwable: Throwable) {
-        videos!!.postValue(null)
+        videos.setValue(null)
     }
 }

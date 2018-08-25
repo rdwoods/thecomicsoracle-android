@@ -43,7 +43,6 @@ class CharacterSearchFragment : Fragment() {
     private var characterSearchView: SearchView? = null
 
     private var savedSearchTerm: String? = null
-    private var comicCharacterObserver: Observer<ArrayList<ComicCharacter>>? = null
 
 
     val fragmentName: String
@@ -118,14 +117,6 @@ class CharacterSearchFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return super.onOptionsItemSelected(item)
-    }
-
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -133,12 +124,13 @@ class CharacterSearchFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_character, container, false)
 
         viewModel = ViewModelProviders.of(this).get(CharacterSearchFragmentViewModel::class.java)
-        viewModel?.comicCharacters?.observe(this, Observer { comicCharacters ->
+
+        viewModel?.comicCharacters?.observe(this, Observer<ArrayList<ComicCharacter>> { comicCharacters ->
             showProgress(false)
 
             if (comicCharacters != null) {
                 characterAdapter!!.populateAdapter(comicCharacters)
-                characterRecyclerView!!.adapter = characterAdapter;
+                characterRecyclerView!!.adapter = characterAdapter
 
                 viewModel?.clearSearchResultsPreferences()
 
@@ -152,15 +144,13 @@ class CharacterSearchFragment : Fragment() {
                     e.printStackTrace()
                 }
 
-
-                showProgress(false)
                 characterRecyclerView!!.visibility = View.VISIBLE
             } else {
 
             }
         })
 
-        //Your RecyclerView
+        characterAdapter = ComicCharacterAdapter(this.context!!)
         characterRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
         characterRecyclerView!!.setHasFixedSize(true)
         characterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
@@ -198,7 +188,7 @@ class CharacterSearchFragment : Fragment() {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                var descr: String? = characterAdapter!!.characters[position].description
+                var descr: String? = characterAdapter!!.searchedCharacters[position].description
 
                 if (descr == null){
                     descr = ""

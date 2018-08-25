@@ -75,7 +75,7 @@ class VideoSearchFragment : Fragment() {
 
         if (videoSearchView != null) {
 
-            if (!savedSearchTerm!!.isEmpty()) {
+            if (savedSearchTerm != null && !savedSearchTerm!!.isEmpty()) {
                 videoSearchView!!.setQuery(savedSearchTerm, false)
             }
 
@@ -84,7 +84,7 @@ class VideoSearchFragment : Fragment() {
             videoSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(searchText: String): Boolean {
 
-                    clearPreviousList()
+                    videoAdapter!!.clearVideoSearchList()
 
                     showProgress(true)
 
@@ -134,7 +134,10 @@ class VideoSearchFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(VideoSearchFragmentViewModel::class.java)
 
-        //Your RecyclerView
+        videoAdapter = VideoAdapter(this.context!!)
+
+        videoRecyclerView!!.adapter = videoAdapter
+
         videoRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
         videoRecyclerView!!.setHasFixedSize(true)
         videoRecyclerView!!.layoutManager = LinearLayoutManager(activity)
@@ -146,23 +149,10 @@ class VideoSearchFragment : Fragment() {
 
         viewModel?.videos?.observe(this, Observer { comicsVideos ->
 
-            videoAdapter!!.videos = comicsVideos
-            setAdapterOnClick()
-
-            videoRecyclerView!!.adapter = videoAdapter
-
-            mComicsOracleRepo?.helper?.clearSearchResultsPreferences()
-
-            try {
-                val savedSearchTerm = videoSearchView!!.query.toString()
-                val savedData = viewModel!!.getSavedData()
-
-                mComicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData!!)
-
-            } catch (e: Exception) {
-                e.printStackTrace()
+            if (comicsVideos != null) {
+                videoAdapter!!.populateAdapter(comicsVideos)
+                setAdapterOnClick()
             }
-
 
             showProgress(false)
             videoRecyclerView!!.visibility = View.VISIBLE
@@ -179,7 +169,7 @@ class VideoSearchFragment : Fragment() {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, VideoViewActivity::class.java)
                 val bundle = Bundle()
-                var url: String? = videoAdapter!!.videos?.get(position)?.highUrl
+                var url: String? = videoAdapter!!.searchedVideos.get(position).highUrl
 
                 if (url == null){
                     url = ""
@@ -194,10 +184,10 @@ class VideoSearchFragment : Fragment() {
     }
 
     private fun restorePreviousSearchResults() {
-        val savedData = mComicsOracleRepo?.helper?.savedSearchTerm
+        val savedData = mComicsOracleRepo?.helper?.savedSearchTerm ?: return
 
         try {
-            if (!savedData!!.isEmpty()) {
+            if (!savedData.isEmpty()) {
                 viewModel?.setVideoList(viewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<Video>)
                 setAdapterOnClick()
                 videoRecyclerView!!.adapter = videoAdapter

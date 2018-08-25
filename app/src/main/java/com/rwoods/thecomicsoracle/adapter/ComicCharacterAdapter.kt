@@ -14,31 +14,38 @@ import com.rwoods.thecomicsoracle.model.ComicCharacter
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
+class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
     internal var characters: ArrayList<ComicCharacter>
-    internal val searchedCharacterList: ArrayList<ComicCharacter>
+    internal val searchedCharacters: ArrayList<ComicCharacter>
     private var clickListener: OnItemClickListener? = null
 
 
     init {
         this.characters = ArrayList()
-        this.searchedCharacterList = ArrayList()
+        this.searchedCharacters = ArrayList()
     }
 
     fun add(e: ComicCharacter, position: Int) {
         var position = position
         position = if (position == -1) itemCount else position
-        searchedCharacterList.add(position, e)
+        searchedCharacters.add(position, e)
         notifyItemInserted(position)
     }
 
+    fun add(e: ComicCharacter) {
+        searchedCharacters.add(e)
+        notifyItemInserted(searchedCharacters.size - 1)
+    }
+
     fun populateAdapter(cc: ArrayList<ComicCharacter>){
-        characters = cc;
+        for (comicCharacter in cc){
+            add(comicCharacter)
+        }
     }
 
     fun remove(position: Int) {
         if (position < itemCount) {
-            searchedCharacterList.removeAt(position)
+            searchedCharacters.removeAt(position)
             notifyItemRemoved(position)
         }
     }
@@ -62,14 +69,14 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.character_listrow, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.character_listrow, parent, false)
         return CharacterViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
-        val image = searchedCharacterList[position].image
-        val characterName = searchedCharacterList[position].name
-        val gender = searchedCharacterList[position].gender
+        val image = searchedCharacters[position].image
+        val characterName = searchedCharacters[position].name
+        val gender = searchedCharacters[position].gender
         val thumbUrl: String? = null
 
         val placeholderImageId: Int
@@ -92,7 +99,7 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
             val url = image.iconUrl
 
             if (url != null) {
-                Glide.with(mContext)
+                Glide.with(context)
                     .load(url)
                     .placeholder(R.drawable.default_profile_avatar)
                     .error(R.drawable.default_profile_avatar)
@@ -104,7 +111,7 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
 
     fun setComicCharacters(comicCharacters: ArrayList<ComicCharacter>){
         characters = comicCharacters
-        this.searchedCharacterList.addAll(characters)
+        this.searchedCharacters.addAll(characters)
         this.notifyDataSetChanged()
     }
 
@@ -120,11 +127,12 @@ class ComicCharacterAdapter(private val mContext: Context) : RecyclerView.Adapte
 
 
     override fun getItemCount(): Int {
-        return searchedCharacterList.size
+        return searchedCharacters.size
     }
 
     fun clear() {
         characters.clear()
+        searchedCharacters.clear()
         this.notifyDataSetChanged()
     }
 }
