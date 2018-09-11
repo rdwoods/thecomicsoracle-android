@@ -28,13 +28,6 @@ class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAda
         notifyItemInserted(searchedVideos.size - 1)
     }
 
-    fun remove(position: Int) {
-        if (position < itemCount) {
-            searchedVideos.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
 
     inner class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         var ivVideoThumbnail: ImageView? = null

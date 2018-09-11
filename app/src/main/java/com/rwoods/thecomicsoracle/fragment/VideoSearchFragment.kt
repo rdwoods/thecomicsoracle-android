@@ -117,14 +117,14 @@ class VideoSearchFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(VideoSearchFragmentViewModel::class.java)
 
-        videoAdapter = VideoAdapter(this.context!!)
-
-        videoRecyclerView!!.adapter = videoAdapter
+        videoAdapter = VideoAdapter(activity!!.applicationContext)
 
         videoRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
         videoRecyclerView!!.setHasFixedSize(true)
         videoRecyclerView!!.layoutManager = LinearLayoutManager(activity)
         videoRecyclerView!!.visibility = View.GONE
+
+        videoRecyclerView!!.adapter = videoAdapter
 
         mProgressBar = rootView.findViewById(R.id.search_character_progress) as ProgressBar
 

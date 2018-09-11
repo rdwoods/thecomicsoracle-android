@@ -150,7 +150,7 @@ class CharacterSearchFragment : Fragment() {
             }
         })
 
-        characterAdapter = ComicCharacterAdapter(this.context!!)
+        characterAdapter = ComicCharacterAdapter(activity!!.applicationContext)
         characterRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
         characterRecyclerView!!.setHasFixedSize(true)
         characterRecyclerView!!.layoutManager = LinearLayoutManager(activity)

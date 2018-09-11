@@ -1,7 +1,6 @@
 package com.rwoods.thecomicsoracle.repository
 
 import android.app.Application
-import android.content.Context
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.preferences.SharedPreferencesHelper
 import io.realm.Realm
@@ -15,24 +14,24 @@ import io.realm.RealmResults
 
 class ComicsOracleRepository(application: Application) {
     val helper: SharedPreferencesHelper = SharedPreferencesHelper(application)
-    internal var mRealm: Realm? = null
+    internal var realm: Realm? = null
 
     init {
-        mRealm = Realm.getDefaultInstance()
+        realm = Realm.getDefaultInstance()
     }
 
     fun onResume() {
-        mRealm = Realm.getDefaultInstance()
+        realm = Realm.getDefaultInstance()
     }
 
     fun onDestroy() {
-        if (mRealm != null) {
-            mRealm!!.close()
+        if (realm != null) {
+            realm!!.close()
         }
     }
 
-    internal fun getFavoritesFromDb(): RealmResults<ComicCharacter>? {
-        val fcResults = mRealm!!.where(ComicCharacter::class.java).findAll()
+    internal fun getFavoritesFromDatabase(): RealmResults<ComicCharacter>? {
+        val fcResults = realm!!.where(ComicCharacter::class.java).findAll()
 
         return fcResults
     }

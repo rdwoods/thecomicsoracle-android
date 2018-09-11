@@ -2,23 +2,26 @@ package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.rwoods.thecomicsoracle.R
+import com.rwoods.thecomicsoracle.activity.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
+import com.rwoods.thecomicsoracle.util.Constants
 import io.realm.RealmResults
 
 /**
  * Created by rahmanwoods on 6/22/16.
  */
 class FavoriteCharactersFragment : Fragment() {
-    private var mFavComicCharacterAdapter: ComicCharacterAdapter? = null
+    private var favComicCharacterAdapter: ComicCharacterAdapter? = null
 
-    private var mFavCharacterRecyclerView: RecyclerView? = null
+    private var favCharacterRecyclerView: RecyclerView? = null
     private var fragmentName: String? = null
 
     private var viewModel: FavoriteCharacterFragmentViewModel? = null
@@ -37,14 +40,6 @@ class FavoriteCharactersFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -53,13 +48,14 @@ class FavoriteCharactersFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(FavoriteCharacterFragmentViewModel::class.java)
 
         //Your RecyclerView
-        mFavCharacterRecyclerView = rootView.findViewById(R.id.fav_character_recycler_view) as RecyclerView
-        mFavCharacterRecyclerView!!.setHasFixedSize(true)
-        mFavCharacterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
+        favComicCharacterAdapter = ComicCharacterAdapter(activity!!.applicationContext)
+        favCharacterRecyclerView = rootView.findViewById(R.id.fav_character_recycler_view) as RecyclerView
+        favCharacterRecyclerView!!.setHasFixedSize(true)
+        favCharacterRecyclerView!!.layoutManager = LinearLayoutManager(activity)
 
         viewModel!!.setUp()
 
-        val favoriteCharacters = viewModel?.comicsOracleRepo?.getFavoritesFromDb()
+        val favoriteCharacters = viewModel?.comicsOracleRepo?.getFavoritesFromDatabase()
 
         displayFavorites(favoriteCharacters)
 
@@ -67,24 +63,35 @@ class FavoriteCharactersFragment : Fragment() {
     }
 
     private fun displayFavorites(favoriteCharacters: RealmResults<ComicCharacter>?) {
-        clearPreviousList()
+        favComicCharacterAdapter!!.clear()
 
         if (!favoriteCharacters?.isEmpty()!!) {
 
-            viewModel?.favoriteCharacters!!.addAll(favoriteCharacters)
+            favComicCharacterAdapter?.populateAdapter(favoriteCharacters)
 
-            viewModel?.mFavComicCharacterAdapter?.setComicCharacters(viewModel?.favoriteCharacters!!)
+            favCharacterRecyclerView!!.adapter = favComicCharacterAdapter
 
-            mFavCharacterRecyclerView!!.adapter = mFavComicCharacterAdapter
-
-            viewModel?.setAdapterOnClick()
+            setAdapterOnClick()
         }
     }
 
+    fun setAdapterOnClick(){
+        favComicCharacterAdapter!!.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                val intent = Intent(activity, CharacterDescriptionWebViewActivity::class.java)
+                val bundle = Bundle()
+                var descr: String? = favComicCharacterAdapter!!.characters[position].description
 
+                if (descr == null){
+                    descr = ""
+                }
 
-    private fun clearPreviousList() {
-        viewModel?.favoriteCharacters!!.clear()
+                bundle.putString(Constants.CHARACTER, descr)
+                intent.putExtras(bundle)
+
+                startActivity(intent)
+            }
+        })
     }
 
 
@@ -93,14 +100,6 @@ class FavoriteCharactersFragment : Fragment() {
         retainInstance = true
     }
 
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-    }
 
     companion object {
 

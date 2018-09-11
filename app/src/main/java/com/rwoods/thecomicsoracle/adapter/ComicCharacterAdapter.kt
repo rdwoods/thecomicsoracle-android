@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
+import io.realm.RealmResults
 
 /**
  * Created by rahmanwoods on 5/12/15.
@@ -25,13 +26,6 @@ class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter
         this.searchedCharacters = ArrayList()
     }
 
-    fun add(e: ComicCharacter, position: Int) {
-        var position = position
-        position = if (position == -1) itemCount else position
-        searchedCharacters.add(position, e)
-        notifyItemInserted(position)
-    }
-
     fun add(e: ComicCharacter) {
         searchedCharacters.add(e)
         notifyItemInserted(searchedCharacters.size - 1)
@@ -43,13 +37,11 @@ class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter
         }
     }
 
-    fun remove(position: Int) {
-        if (position < itemCount) {
-            searchedCharacters.removeAt(position)
-            notifyItemRemoved(position)
+    fun populateAdapter(cc: RealmResults<ComicCharacter>){
+        for (comicCharacter in cc){
+            add(comicCharacter)
         }
     }
-
 
     inner class CharacterViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         var ivCharacterThumbnail: ImageView? = null
