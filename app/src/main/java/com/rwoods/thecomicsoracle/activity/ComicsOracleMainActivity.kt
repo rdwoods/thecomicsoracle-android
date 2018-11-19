@@ -73,7 +73,7 @@ class ComicsOracleMainActivity : AppCompatActivity() {
         val tabLayout = findViewById(R.id.tabs) as TabLayout
         //IconTextTabLayout tabLayout = (IconTextTabLayout) findViewById(R.id.tabs);
         //tabLayout.setTabIcons(tabIcons);
-        tabLayout?.setupWithViewPager(mViewPager)
+        tabLayout.setupWithViewPager(mViewPager)
 
     }
 

@@ -10,32 +10,22 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.Video
-import java.util.*
 
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video>) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
-    val searchedVideoList: ArrayList<Video> = ArrayList()
-    private var mItemClickListener: OnItemClickListener? = null
+class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
+    var searchedVideos: ArrayList<Video> = ArrayList()
+    private var clickListener: OnItemClickListener? = null
 
 
     init {
-        this.searchedVideoList.addAll(this.videoList)
+        this.searchedVideos = ArrayList()
     }
 
-    fun add(e: Video, position: Int) {
-        var position = position
-        position = if (position == -1) itemCount else position
-        searchedVideoList.add(position, e)
-        notifyItemInserted(position)
-    }
-
-    fun remove(position: Int) {
-        if (position < itemCount) {
-            searchedVideoList.removeAt(position)
-            notifyItemRemoved(position)
-        }
+    fun add(e: Video) {
+        searchedVideos.add(e)
+        notifyItemInserted(searchedVideos.size - 1)
     }
 
 
@@ -50,20 +40,20 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
         }
 
         override fun onClick(v: View) {
-            if (mItemClickListener != null) {
-                mItemClickListener!!.onItemClick(v, tvVideoTitle.tag as Int)
+            if (clickListener != null) {
+                clickListener!!.onItemClick(v, tvVideoTitle.tag as Int)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.video_listrow, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.video_listrow, parent, false)
         return VideoViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
-        val image = searchedVideoList[position].image
-        val characterName = searchedVideoList[position].name
+        val image = searchedVideos[position].image
+        val characterName = searchedVideos[position].name
 
         if (characterName != null) {
             holder.tvVideoTitle.tag = position
@@ -74,7 +64,7 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
             val url = image.iconUrl
 
             if (url != null) {
-                Glide.with(mContext)
+                Glide.with(context)
                         .load(url)
                         .placeholder(R.drawable.default_profile_avatar)
                         .error(R.drawable.default_profile_avatar)
@@ -99,11 +89,22 @@ class VideoAdapter(private val mContext: Context, val videoList: ArrayList<Video
     }
 
     fun setOnItemClickListener(itemClickListener: OnItemClickListener) {
-        mItemClickListener = itemClickListener
+        clickListener = itemClickListener
     }
 
 
     override fun getItemCount(): Int {
-        return searchedVideoList.size
+        return searchedVideos.size
+    }
+
+    fun clearVideoSearchList() {
+        searchedVideos.clear()
+        this.notifyDataSetChanged()
+    }
+
+    fun populateAdapter(comicsVideos: ArrayList<Video>) {
+        for (video in comicsVideos){
+            add(video)
+        }
     }
 }

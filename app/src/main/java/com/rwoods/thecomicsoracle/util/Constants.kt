@@ -25,6 +25,6 @@ object Constants {
     val VIDEO_URL = "videoUrl"
     val CHARACTER = "character"
     val SHARED_PREFS = "ComicsOracleSharedPrefs"
-    val SEARCHED_CHARACTER_LIST = "searchedCharacterList"
+    val SEARCHED_CHARACTER_LIST = "searchedCharacters"
     val SEARCHED_CHARACTER = "searchedCharacter"
 }

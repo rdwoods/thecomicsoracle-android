@@ -10,34 +10,38 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import java.util.*
+import io.realm.RealmResults
 
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class ComicCharacterAdapter(private val mContext: Context, val characterList: ArrayList<ComicCharacter>) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    val searchedCharacterList: ArrayList<ComicCharacter> = ArrayList<ComicCharacter>()
-    private var mItemClickListener: OnItemClickListener? = null
+class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
+    internal var characters: ArrayList<ComicCharacter>
+    internal val searchedCharacters: ArrayList<ComicCharacter>
+    private var clickListener: OnItemClickListener? = null
 
 
     init {
-        this.searchedCharacterList.addAll(characterList)
+        this.characters = ArrayList()
+        this.searchedCharacters = ArrayList()
     }
 
-    fun add(e: ComicCharacter, position: Int) {
-        var position = position
-        position = if (position == -1) itemCount else position
-        searchedCharacterList.add(position, e)
-        notifyItemInserted(position)
+    fun add(e: ComicCharacter) {
+        searchedCharacters.add(e)
+        notifyItemInserted(searchedCharacters.size - 1)
     }
 
-    fun remove(position: Int) {
-        if (position < itemCount) {
-            searchedCharacterList.removeAt(position)
-            notifyItemRemoved(position)
+    fun populateAdapter(cc: ArrayList<ComicCharacter>){
+        for (comicCharacter in cc){
+            add(comicCharacter)
         }
     }
 
+    fun populateAdapter(cc: RealmResults<ComicCharacter>){
+        for (comicCharacter in cc){
+            add(comicCharacter)
+        }
+    }
 
     inner class CharacterViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         var ivCharacterThumbnail: ImageView? = null
@@ -50,21 +54,21 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
         }
 
         override fun onClick(v: View) {
-            if (mItemClickListener != null) {
-                mItemClickListener!!.onItemClick(v, tvCharacterName.tag as Int)
+            if (clickListener != null) {
+                clickListener!!.onItemClick(v, tvCharacterName.tag as Int)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.character_listrow, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.character_listrow, parent, false)
         return CharacterViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
-        val image = searchedCharacterList[position].image
-        val characterName = searchedCharacterList[position].name
-        val gender = searchedCharacterList[position].gender
+        val image = searchedCharacters[position].image
+        val characterName = searchedCharacters[position].name
+        val gender = searchedCharacters[position].gender
         val thumbUrl: String? = null
 
         val placeholderImageId: Int
@@ -87,7 +91,7 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
             val url = image.iconUrl
 
             if (url != null) {
-                Glide.with(mContext)
+                Glide.with(context)
                     .load(url)
                     .placeholder(R.drawable.default_profile_avatar)
                     .error(R.drawable.default_profile_avatar)
@@ -97,26 +101,30 @@ class ComicCharacterAdapter(private val mContext: Context, val characterList: Ar
         }
     }
 
+    fun setComicCharacters(comicCharacters: ArrayList<ComicCharacter>){
+        characters = comicCharacters
+        this.searchedCharacters.addAll(characters)
+        this.notifyDataSetChanged()
+    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
+
+
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
 
     fun setOnItemClickListener(itemClickListener: OnItemClickListener) {
-        mItemClickListener = itemClickListener
+        clickListener = itemClickListener
     }
 
 
     override fun getItemCount(): Int {
-        return searchedCharacterList.size
+        return searchedCharacters.size
+    }
+
+    fun clear() {
+        characters.clear()
+        searchedCharacters.clear()
+        this.notifyDataSetChanged()
     }
 }
