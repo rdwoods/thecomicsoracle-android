@@ -1,23 +1,27 @@
+/*
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.activity.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.util.Constants
-import io.realm.RealmResults
 
+*/
 /**
  * Created by rahmanwoods on 6/22/16.
- */
+ *//*
+
 class FavoriteCharactersFragment : Fragment() {
     private var favComicCharacterAdapter: ComicCharacterAdapter? = null
 
@@ -62,10 +66,10 @@ class FavoriteCharactersFragment : Fragment() {
         return rootView
     }
 
-    private fun displayFavorites(favoriteCharacters: RealmResults<ComicCharacter>?) {
+    private fun displayFavorites(favoriteCharacters: ArrayList<ComicCharacter>) {
         favComicCharacterAdapter!!.clear()
 
-        if (!favoriteCharacters?.isEmpty()!!) {
+        if (!favoriteCharacters.isEmpty()) {
 
             favComicCharacterAdapter?.populateAdapter(favoriteCharacters)
 
@@ -113,3 +117,4 @@ class FavoriteCharactersFragment : Fragment() {
         }
     }
 }
+*/

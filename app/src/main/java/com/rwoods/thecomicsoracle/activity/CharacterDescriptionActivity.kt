@@ -1,3 +1,4 @@
+/*
 package com.rwoods.thecomicsoracle.activity
 
 import android.annotation.TargetApi
@@ -9,9 +10,9 @@ import android.graphics.drawable.LevelListDrawable
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import android.text.Html
 import android.text.method.ScrollingMovementMethod
 import android.widget.Button
@@ -20,25 +21,23 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.request.RequestOptions
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.ComicCharacter
-import com.rwoods.thecomicsoracle.presenter.CharacterDescriptionPresenter
 import com.rwoods.thecomicsoracle.util.Constants
 import com.rwoods.thecomicsoracle.view.CharacterDescriptionActivityView
 import com.squareup.moshi.Moshi
-import io.realm.Realm
 import java.io.IOException
 
 class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionActivityView {
 
     private var tvCharacterDesc: TextView? = null
 
-    @BindView(R.id.btn_favorite) internal var btnFavoriteCharacter: Button? = null
+    @BindView(R.id.btn_favorite) @JvmField var btnFavoriteCharacter: Button? = null
 
     private var mComicCharacter: ComicCharacter? = null
     private var favoriteCharacter = false
-
-    private var realm: Realm? = null
 
     private var presenter: CharacterDescriptionPresenter? = null
 
@@ -63,8 +62,6 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
         //btnFavoriteCharacter = (Button) findViewById(R.id.btn_favorite);
 
         tvCharacterDesc!!.movementMethod = ScrollingMovementMethod()
-
-        realm = Realm.getDefaultInstance()
 
 
         val args = intent.extras
@@ -122,11 +119,14 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
     }
 
     private fun isFavoriteCharacter(id: Long?): Boolean {
-        val fcResults = realm!!.where<ComicCharacter>(ComicCharacter::class.java)
+        */
+/*val fcResults = realm!!.where<ComicCharacter>(ComicCharacter::class.java)
                 .equalTo("id", id)
                 .findAll()
 
-        return !fcResults.isEmpty()
+        return !fcResults.isEmpty()*//*
+
+        return true
     }
 
     private inner class TextViewImageStore {
@@ -142,15 +142,17 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
         }
     }
 
-    /*@Override
+    */
+/*@Override
     public void onBackPressed() {
         Intent data = new Intent();
         data.putExtra("key", yourDataHere);
         setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }
-*/
-    private inner class LoadHtmlTask internal constructor(private val mContext: Context, private val source: String, private val levelListDrawable: LevelListDrawable) : AsyncTask<TextViewImageStore, Void, Bitmap>() {
+*//*
+
+    private inner class LoadHtmlTask internal constructor(private val context: Context, private val source: String, private val levelListDrawable: LevelListDrawable) : AsyncTask<TextViewImageStore, Void, Bitmap>() {
         private var t: TextView? = null
         private var width: Int = 0
         private var height: Int = 0
@@ -163,22 +165,25 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
             height = params[0].intrinsicHeight
 
             bmp = Glide
-                    .with(mContext)
-                    .load(R.drawable.default_profile_avatar)
+                    .with(context)
                     .asBitmap()
-                    .centerCrop()
-                    .dontTransform()
+                    .load(R.drawable.default_profile_avatar)
+                    .apply(RequestOptions()
+                            .centerCrop()
+                            .dontTransform()
+                    )
                     .into(480, 480) // Width and height
                     .get()
 
             try {
                 bmp = Glide
-                        .with(mContext)
-                        .load(source)
+                        .with(context)
                         .asBitmap()
-                        .error(R.drawable.default_profile_avatar)
-                        .centerCrop()
-                        .dontTransform()
+                        .load(source)
+                        .apply(RequestOptions()
+                                .centerCrop()
+                                .dontTransform()
+                                .error(R.drawable.default_profile_avatar))
                         .into(480, 480) // Width and height
                         .get()
 
@@ -203,8 +208,11 @@ class CharacterDescriptionActivity : AppCompatActivity(), CharacterDescriptionAc
                 t!!.text = t!!.text // invalidate() doesn't work correctly...
 
 
-            } catch (e: Exception) { /* Like a null bitmap, etc. */
+            } catch (e: Exception) { */
+/* Like a null bitmap, etc. *//*
+
             }
         }
     }
 }
+*/

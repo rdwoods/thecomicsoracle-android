@@ -2,11 +2,7 @@ package com.rwoods.thecomicsoracle.model
 
 import com.squareup.moshi.Json
 
-import io.realm.RealmObject
-import io.realm.annotations.RealmClass
-
-@RealmClass
-open class Image : RealmObject() {
+open class Image {
 
     @Json(name = "icon_url")
     var iconUrl: String? = null

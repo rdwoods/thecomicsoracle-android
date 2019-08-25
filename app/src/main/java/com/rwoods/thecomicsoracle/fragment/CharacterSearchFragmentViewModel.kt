@@ -1,8 +1,7 @@
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Application
-import android.arch.lifecycle.MutableLiveData
-import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
+import androidx.lifecycle.MutableLiveData
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.model.ComicCharacterResponse
 import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
@@ -13,11 +12,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CharacterSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application), Callback<ComicCharacterResponse> {
+class CharacterSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application) {
 
     internal var searchedComicCharacterList: ArrayList<ComicCharacter>? = null
 
-    internal var searchedComicsCharacters: MutableLiveData<ArrayList<ComicCharacter>> ? = null
+    internal var searchedComicsCharacters: MutableLiveData<ArrayList<ComicCharacter>>? = null
+
+    var progressBarLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     internal var moshi: Moshi? = null
 
@@ -27,8 +28,7 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
 
     internal var savedCharacters: ArrayList<ComicCharacter>? = null
 
-
-    fun setUp() {
+    init {
         comicsOracleRepo = ComicsOracleRepository(application)
 
         searchedComicCharacterList = ArrayList()
@@ -41,42 +41,46 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
 
     fun getCharactersFromRest(searchText: String) {
 
-        val filteredCharacterName = "name:$searchText"
-        val characterSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getCharacterByName(filteredCharacterName)
+        progressBarLiveData.postValue(true)
 
-        characterSearchCall?.enqueue(this)
+        val filteredCharacterName = "name:$searchText"
+        comicsOracleRepo.retrofitWrapper.createComicsOracleService().getCharacterByName(filteredCharacterName).enqueue(object : Callback<ComicCharacterResponse> {
+
+            override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
+                val characters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
+
+                progressBarLiveData.postValue(false)
+
+                characters?.apply {
+                    savedCharacters = characters
+                    comicCharacters.postValue(this)
+                } ?: run {
+                    comicCharacters.postValue(null)
+                }
+            }
+
+            override fun onFailure(call: Call<ComicCharacterResponse>, t: Throwable) {
+                progressBarLiveData.postValue(false)
+                comicCharacters.postValue(null)
+            }
+
+        })
     }
 
     fun getSavedData(): String? {
         return jsonAdapter!!.toJson(savedCharacters)
     }
 
-    override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
-        val characters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
-
-        if (characters != null) {
-            savedCharacters = characters;
-            comicCharacters.setValue(characters)
-            //mView?.displayCharacterSearchNotRetrieved()
-        } else {
-            //mView?.displayCharactersFromRest(comicCharacters)
-            comicCharacters.setValue(null)
-        }
-    }
-
-    override fun onFailure(call: Call<ComicCharacterResponse>, t: Throwable) {
-        comicCharacters.setValue(null)
-    }
 
     fun setSavedSearchResults(savedSearchTerm: String, savedData: String) {
-        comicsOracleRepo?.helper?.setSavedSearchResults(savedSearchTerm, savedData)
+        comicsOracleRepo.sharedPreferencesHelper.setSavedSearchResults(savedSearchTerm, savedData)
     }
 
     fun clearSearchResultsPreferences() {
-        comicsOracleRepo?.helper?.clearSearchResultsPreferences()
+        comicsOracleRepo.sharedPreferencesHelper.clearSearchResultsPreferences()
     }
 
     fun getSavedSearchTerm(): String? {
-        return comicsOracleRepo?.helper?.savedSearchTerm
+        return comicsOracleRepo.sharedPreferencesHelper.savedSearchTerm
     }
 }

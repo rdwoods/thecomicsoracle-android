@@ -32,8 +32,8 @@
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="CircularProgress" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/violetblue</item>
+    <style name="HorizontalProgressBar.Indeterminate" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateTintMode">src_atop</item>
     </style>
 
 </resources>

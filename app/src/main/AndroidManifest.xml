@@ -18,9 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
-            android:name="DATABASE"
-            android:value="comicsoracle.db"/>
-        <meta-data
             android:name="VERSION"
             android:value="1"/>
         <meta-data
@@ -57,10 +54,6 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
             </intent-filter>
         </receiver>
-
-        <activity
-            android:name=".activity.CharacterDescriptionActivity">
-        </activity>
 
         <activity
             android:name=".activity.VideoViewActivity">
