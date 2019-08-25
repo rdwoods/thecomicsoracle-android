@@ -1,32 +1,22 @@
 package com.rwoods.thecomicsoracle.fragment
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
-import android.app.Activity
-import android.app.SearchManager
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.view.MenuItemCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
 import android.view.*
-import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
+import com.rwoods.thecomicsoracle.activity.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.activity.VideoViewActivity
 import com.rwoods.thecomicsoracle.adapter.VideoAdapter
 import com.rwoods.thecomicsoracle.model.Video
-import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
 import com.rwoods.thecomicsoracle.util.Constants
+import kotlinx.android.synthetic.main.fragment_search_results.*
 import org.slf4j.LoggerFactory
-import java.io.IOException
 
 /**
  * A simple [Fragment] subclass.
@@ -35,14 +25,9 @@ import java.io.IOException
  */
 class VideoSearchFragment : Fragment() {
 
-    private var videoRecyclerView: RecyclerView? = null
-
     private var videoAdapter: VideoAdapter? = null
 
-    private var mProgressBar: ProgressBar? = null
     private var videoSearchView: SearchView? = null
-
-    private var mComicsOracleRepo: ComicsOracleRepository? = null
 
     private var savedSearchTerm: String? = null
 
@@ -50,142 +35,123 @@ class VideoSearchFragment : Fragment() {
         get() = FRAGMENT_NAME
 
 
-    private var viewModel: VideoSearchFragmentViewModel? = null
+    private lateinit var viewModel: VideoSearchFragmentViewModel
+
+    private lateinit var searchView: SearchView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //savedSearchTerm = viewModel.helper.savedSearchTerm
-
         if (arguments != null) {
-            val fragmentName = arguments!!.getString(FRAGMENT_NAME)
+            val fragmentName = arguments?.getString(FRAGMENT_NAME)
         }
 
         setHasOptionsMenu(true)
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        //MenuItem searchItem = menu.findItem(R.id.action_search);
-
-        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-
-        videoSearchView = MenuItemCompat.getActionView(menu!!.findItem(R.id.action_search)) as android.support.v7.widget.SearchView
-
-        if (videoSearchView != null) {
-
-            if (savedSearchTerm != null && !savedSearchTerm!!.isEmpty()) {
-                videoSearchView!!.setQuery(savedSearchTerm, false)
-            }
-
-            videoSearchView!!.setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
-
-            videoSearchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(searchText: String): Boolean {
-
-                    videoAdapter!!.clearVideoSearchList()
-
-                    showProgress(true)
-
-                    viewModel?.getVideosFromRest(searchText.trim { it <= ' ' })
-
-                    videoSearchView!!.clearFocus()
-
-                    return false
-                }
-
-                override fun onQueryTextChange(searchText: String): Boolean {
-                    return false
-                }
-            })
-
-            videoSearchView!!.setOnCloseListener {
-                clearPreviousList()
-
-                false
-            }
-        }
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val rootView = inflater!!.inflate(R.layout.fragment_character, container, false)
 
         viewModel = ViewModelProviders.of(this).get(VideoSearchFragmentViewModel::class.java)
 
-        videoAdapter = VideoAdapter(activity!!.applicationContext)
+        viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
+            progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
+        })
 
-        videoRecyclerView = rootView.findViewById(R.id.character_recycler_view) as RecyclerView
-        videoRecyclerView!!.setHasFixedSize(true)
-        videoRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        videoRecyclerView!!.visibility = View.GONE
+        viewModel.videos.observe(this, Observer<ArrayList<Video>> { videos ->
+            videos?.apply {
+                (recyclerViewResults.adapter as VideoAdapter).populateAdapter(videos)
 
-        videoRecyclerView!!.adapter = videoAdapter
+                recyclerViewResults.visibility = View.VISIBLE
+            } ?: run {
 
-        mProgressBar = rootView.findViewById(R.id.search_character_progress) as ProgressBar
+                activity?.runOnUiThread {
+                    Toast.makeText(activity, "Could not get results", Toast.LENGTH_LONG).show()
 
-        viewModel!!.setUp()
+                    recyclerViewResults.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
 
-        viewModel?.videos?.observe(this, Observer { comicsVideos ->
 
-            showProgress(false)
-            videoRecyclerView!!.visibility = View.VISIBLE
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
 
-            if (comicsVideos != null) {
-                videoAdapter!!.populateAdapter(comicsVideos)
-                setAdapterOnClick()
-            } else {
-                displayVideoSearchFailed()
+        inflater.inflate(R.menu.menu_comics_oracle_main, menu)
+
+        searchView = SearchView((context as ComicsOracleMainActivity).supportActionBar?.themedContext ?: context)
+
+        menu.findItem(R.id.action_search).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            actionView = searchView
+        }
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(searchText: String): Boolean {
+
+                videoAdapter?.clear()
+
+                viewModel.getVideosFromRest(searchText.trim { it <= ' ' })
+
+                searchView.clearFocus()
+
+                return false
+            }
+
+            override fun onQueryTextChange(searchText: String): Boolean {
+                return false
             }
         })
 
-        restorePreviousSearchResults()
-
-        return rootView
+        searchView.setOnClickListener {view ->  }
     }
 
-    private fun setAdapterOnClick(){
-        videoAdapter!!.setOnItemClickListener(object: VideoAdapter.OnItemClickListener {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_search_results, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        videoAdapter = VideoAdapter(requireContext())
+        recyclerViewResults.setHasFixedSize(true)
+        recyclerViewResults.layoutManager = LinearLayoutManager(requireContext())
+        recyclerViewResults.visibility = View.GONE
+
+        videoAdapter?.setOnItemClickListener(object: VideoAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, VideoViewActivity::class.java)
                 val bundle = Bundle()
-                var url: String? = videoAdapter!!.searchedVideos.get(position).highUrl
+                val url: String? = videoAdapter?.searchedVideos?.get(position)?.highUrl
 
-                if (url == null){
-                    url = ""
+
+                url?.apply {
+                    bundle.putString(Constants.VIDEO_URL, this)
+                    intent.putExtras(bundle)
+
+                    startActivity(intent)
+                } ?: run {
+                    startActivity(intent)
                 }
-
-                bundle.putString(Constants.VIDEO_URL, url)
-                intent.putExtras(bundle)
-
-                startActivity(intent)
             }
         })
+
+        recyclerViewResults.adapter = videoAdapter
     }
 
-    private fun restorePreviousSearchResults() {
-        val savedData = mComicsOracleRepo?.helper?.savedSearchTerm ?: return
-
+    /*private fun restorePreviousSearchResults() {
         try {
-            if (!savedData.isEmpty()) {
-                viewModel?.setVideoList(viewModel!!.jsonAdapter!!.fromJson(savedData) as ArrayList<Video>)
+            if (!savedData!!.isEmpty()) {
                 setAdapterOnClick()
-                videoRecyclerView!!.adapter = videoAdapter
-                videoRecyclerView!!.adapter!!.notifyDataSetChanged()
-                videoRecyclerView!!.visibility = View.VISIBLE
+                recyclerViewResults.adapter = characterAdapter
+                recyclerViewResults.adapter!!.notifyDataSetChanged()
+                recyclerViewResults.visibility = View.VISIBLE
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
-    }
+    }*/
 
-
-    fun displayVideosFromRest(comicVideos: ArrayList<Video>?) {
+    /*fun displayVideosFromRest(comicVideos: ArrayList<Video>?) {
         setAdapterOnClick()
         videoRecyclerView!!.adapter = videoAdapter
         videoRecyclerView!!.adapter!!.notifyDataSetChanged()
@@ -206,47 +172,7 @@ class VideoSearchFragment : Fragment() {
         showProgress(false)
         videoRecyclerView!!.visibility = View.VISIBLE
 
-    }
-
-    private fun clearPreviousList() {
-        viewModel?.videosList!!.clear()
-    }
-
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private fun showProgress(show: Boolean) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime)
-
-        mProgressBar!!.visibility = if (show) View.VISIBLE else View.GONE
-        mProgressBar!!.animate().setDuration(shortAnimTime.toLong()).alpha(
-                (if (show) 1 else 0).toFloat()).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                mProgressBar!!.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        })
-    }
-
-
-    fun displayVideoSearchNotRetrieved() {
-        Toast.makeText(context, "Search of characters failed.", Toast.LENGTH_LONG).show()
-    }
-
-    fun displayVideoSearchFailed() {
-        videoRecyclerView!!.visibility = View.GONE
-        mProgressBar!!.visibility = View.VISIBLE
-        activity?.runOnUiThread {
-            Toast.makeText(context, "Could not get video list", Toast.LENGTH_LONG).show()
-
-            showProgress(false)
-            videoRecyclerView!!.visibility = View.VISIBLE
-        }
-    }
+    }*/
 
     companion object {
         // TODO: Rename parameter arguments, choose names that match

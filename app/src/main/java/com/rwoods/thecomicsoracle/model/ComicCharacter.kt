@@ -1,13 +1,8 @@
 package com.rwoods.thecomicsoracle.model
 
 import com.squareup.moshi.Json
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
 
-open class ComicCharacter : RealmObject() {
-
-    @PrimaryKey
-    var id: Long = 0
+open class ComicCharacter {
 
     var name: String? = null
 

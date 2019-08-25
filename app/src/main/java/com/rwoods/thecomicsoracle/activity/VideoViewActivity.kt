@@ -1,9 +1,9 @@
 package com.rwoods.thecomicsoracle.activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.MediaController
 import android.widget.VideoView
+import androidx.appcompat.app.AppCompatActivity
 
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.util.Constants
@@ -16,26 +16,18 @@ class VideoViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_view)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        videoView = findViewById(R.id.video_view) as VideoView
-
-        var videoUrl = ""
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val args = intent.extras
 
-        if (args != null) {
-            videoUrl = args.getString(Constants.VIDEO_URL)
-        }
-
-        videoView!!.setVideoPath(videoUrl)
+        videoView?.setVideoPath(args?.getString(Constants.VIDEO_URL))
 
         val mediaController = MediaController(this)
         mediaController.setAnchorView(videoView)
 
-        videoView!!.setMediaController(mediaController)
+        videoView?.setMediaController(mediaController)
 
-        videoView!!.start()
+        videoView?.start()
 
     }
 }

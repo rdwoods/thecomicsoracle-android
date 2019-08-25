@@ -1,10 +1,8 @@
 package com.rwoods.thecomicsoracle.repository
 
 import android.app.Application
-import com.rwoods.thecomicsoracle.model.ComicCharacter
+import com.rwoods.thecomicsoracle.network.RetrofitWrapper
 import com.rwoods.thecomicsoracle.preferences.SharedPreferencesHelper
-import io.realm.Realm
-import io.realm.RealmResults
 
 
 /**
@@ -13,26 +11,36 @@ import io.realm.RealmResults
  */
 
 class ComicsOracleRepository(application: Application) {
-    val helper: SharedPreferencesHelper = SharedPreferencesHelper(application)
-    internal var realm: Realm? = null
+    val sharedPreferencesHelper: SharedPreferencesHelper = SharedPreferencesHelper(application)
+    //private var firebaseDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
 
-    init {
-        realm = Realm.getDefaultInstance()
-    }
+    var retrofitWrapper: RetrofitWrapper = RetrofitWrapper(application)
 
-    fun onResume() {
-        realm = Realm.getDefaultInstance()
-    }
+    /*internal fun writeFavoriteToDatabase(character : ComicCharacter) {
+        val ref = firebaseDatabase.child("users").child("rdwoods1")
 
-    fun onDestroy() {
-        if (realm != null) {
-            realm!!.close()
-        }
-    }
+        ref.setValue(character)
+    }*/
 
-    internal fun getFavoritesFromDatabase(): RealmResults<ComicCharacter>? {
-        val fcResults = realm!!.where(ComicCharacter::class.java).findAll()
 
-        return fcResults
-    }
+    /*internal fun getFavoritesFromFirebase(listener: FirebaseDataListener) {
+        val ref = firebaseDatabase.child("users")
+        val favoriteCharacters = ArrayList<ComicCharacter>()
+
+        val favoriteCharacterQuery = ref.equalTo("rdwoods1")
+        favoriteCharacterQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (singleSnapshot in dataSnapshot.children) {
+                    val character = singleSnapshot.getValue(ComicCharacter::class.java)
+                    character?.apply { favoriteCharacters.add(this) }
+                }
+
+                listener.onDatabaseDataRetrieved(favoriteCharacters)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.e(databaseError.toException())
+            }
+        })
+    }*/
 }

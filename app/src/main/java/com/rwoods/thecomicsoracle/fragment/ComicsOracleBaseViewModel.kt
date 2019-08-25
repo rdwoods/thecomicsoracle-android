@@ -1,8 +1,7 @@
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
 
 /**
@@ -10,5 +9,5 @@ import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
  */
 
 open class ComicsOracleBaseViewModel(application: Application) : AndroidViewModel(application) {
-    internal var comicsOracleRepo: ComicsOracleRepository? = null
+    internal lateinit var comicsOracleRepo: ComicsOracleRepository
 }

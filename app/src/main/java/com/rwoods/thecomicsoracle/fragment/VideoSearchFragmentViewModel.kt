@@ -1,8 +1,7 @@
 package com.rwoods.thecomicsoracle.fragment
 
 import android.app.Application
-import android.arch.lifecycle.MutableLiveData
-import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
+import androidx.lifecycle.MutableLiveData
 import com.rwoods.thecomicsoracle.model.Video
 import com.rwoods.thecomicsoracle.model.VideoResponse
 import com.rwoods.thecomicsoracle.repository.ComicsOracleRepository
@@ -13,12 +12,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class VideoSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application), Callback<VideoResponse> {
+class VideoSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application){
 
-    internal var videosList: ArrayList<Video>? = null
     internal var searchedVideoList: ArrayList<Video>? = null
 
-    internal var mView: VideoSearchFragment? = null
+    var progressBarLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     internal var moshi: Moshi? = null
 
@@ -26,9 +24,8 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
 
     internal var videos = MutableLiveData<ArrayList<Video>>()
 
-    fun setUp() {
+    init {
         comicsOracleRepo = ComicsOracleRepository(application)
-        videosList = ArrayList()
         searchedVideoList = ArrayList()
 
         moshi = Moshi.Builder().build()
@@ -36,37 +33,30 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
         jsonAdapter = moshi!!.adapter<List<Video>>(type)
     }
 
-
-    fun setVideoList(videoList: ArrayList<Video>) {
-        videosList = videoList
-    }
-
-
     fun getVideosFromRest(searchText: String) {
 
+        progressBarLiveData.postValue(true)
+
         val filteredVideoName = "name:$searchText"
-        val videoSearchCall = ComicsOracleRetrofitApiRestClient.apiClient?.getVideoByName(filteredVideoName)
 
-        videoSearchCall?.enqueue(this)
-    }
+        comicsOracleRepo.retrofitWrapper.createComicsOracleService().getVideoByName(filteredVideoName).enqueue(object : Callback<VideoResponse> {
+            override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
+                val videoResponse = response.body()?.videos as? ArrayList<Video>
 
+                progressBarLiveData.postValue(false)
 
-    fun getSavedData(): String? {
-        return jsonAdapter!!.toJson(videosList)
-    }
+                videoResponse?.apply {
+                    videos.postValue(videoResponse)
+                } ?: run {
+                    videos.postValue(null)
+                }
+            }
 
-    override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
+            override fun onFailure(call: Call<VideoResponse>, t: Throwable) {
+                progressBarLiveData.postValue(false)
 
-        val videoResponse = response.body()?.videos as? ArrayList<Video>
-
-        if (videoResponse != null) {
-            videos.setValue(videoResponse)
-        } else {
-            videos.setValue(null)
-        }
-    }
-
-    override fun onFailure(call: Call<VideoResponse>, throwable: Throwable) {
-        videos.setValue(null)
+                videos.postValue(null)
+            }
+        })
     }
 }

@@ -1,12 +1,12 @@
 package com.rwoods.thecomicsoracle.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.model.Video
@@ -15,57 +15,57 @@ import com.rwoods.thecomicsoracle.model.Video
  * Created by rahmanwoods on 5/12/15.
  */
 class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
+    internal var videos: ArrayList<Video> = ArrayList()
     var searchedVideos: ArrayList<Video> = ArrayList()
     private var clickListener: OnItemClickListener? = null
 
-
-    init {
-        this.searchedVideos = ArrayList()
-    }
 
     fun add(e: Video) {
         searchedVideos.add(e)
         notifyItemInserted(searchedVideos.size - 1)
     }
 
+    fun populateAdapter(videoSearchResults: ArrayList<Video>){
+        videos.clear()
+
+        for (video in videoSearchResults){
+            add(video)
+        }
+    }
 
     inner class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
-        var ivVideoThumbnail: ImageView? = null
-        val tvVideoTitle: TextView
+        var ivVideoThumbnail: ImageView = view.findViewById(R.id.imageViewThumbnail) as ImageView
+        val tvVideoTitle: TextView = view.findViewById(R.id.textViewName) as TextView
 
         init {
-            ivVideoThumbnail = view.findViewById(R.id.video_thumbnail) as ImageView
-            tvVideoTitle = view.findViewById(R.id.video_name) as TextView
             tvVideoTitle.setOnClickListener(this)
         }
 
         override fun onClick(v: View) {
-            if (clickListener != null) {
-                clickListener!!.onItemClick(v, tvVideoTitle.tag as Int)
-            }
+            clickListener?.onItemClick(v, tvVideoTitle.tag as Int)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.video_listrow, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.listrow, parent, false)
         return VideoViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
         val image = searchedVideos[position].image
-        val characterName = searchedVideos[position].name
+        val videoTitle = searchedVideos[position].name
 
-        if (characterName != null) {
+        videoTitle?.apply {
             holder.tvVideoTitle.tag = position
-            holder.tvVideoTitle.text = characterName
+            holder.tvVideoTitle.text = this
         }
 
-        if (image != null) {
-            val url = image.iconUrl
+        image?.apply {
+            val url = this.iconUrl
 
-            if (url != null) {
+            url?.apply {
                 Glide.with(context)
-                        .load(url)
+                        .load(this)
                         .placeholder(R.drawable.default_profile_avatar)
                         .error(R.drawable.default_profile_avatar)
                         .centerCrop()
@@ -75,15 +75,6 @@ class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAda
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
@@ -97,14 +88,9 @@ class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAda
         return searchedVideos.size
     }
 
-    fun clearVideoSearchList() {
+    fun clear() {
+        videos.clear()
         searchedVideos.clear()
         this.notifyDataSetChanged()
-    }
-
-    fun populateAdapter(comicsVideos: ArrayList<Video>) {
-        for (video in comicsVideos){
-            add(video)
-        }
     }
 }
