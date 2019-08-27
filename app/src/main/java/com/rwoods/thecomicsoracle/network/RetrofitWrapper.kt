@@ -6,7 +6,7 @@ import com.rwoods.thecomicsoracle.util.RetrofitUtil
 import retrofit2.Retrofit
 
 /**
- * Created by Alex Pritchard on 5/25/18.
+ * Created by Rahman Woods on 5/25/18.
  */
 class RetrofitWrapper(ctx: Context) {
     private val retrofit: Retrofit = RetrofitUtil.buildRetrofitClient(ctx)
