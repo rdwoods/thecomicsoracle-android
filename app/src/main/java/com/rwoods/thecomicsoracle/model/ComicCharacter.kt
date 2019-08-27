@@ -2,14 +2,14 @@ package com.rwoods.thecomicsoracle.model
 
 import com.squareup.moshi.Json
 
-open class ComicCharacter {
+data class ComicCharacter(
 
-    var name: String? = null
+    var name: String? = null,
 
-    var gender: String? = null
+    var gender: String? = null,
 
     @Json(name = "image")
-    var image: Image? = null
+    var image: Image? = null,
 
     var description: String? = null
-}
+)

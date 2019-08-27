@@ -82,8 +82,8 @@ class ComicsOracleMainActivity : AppCompatActivity() {
 
         /*Comparator for sorting the list by Merchant Name in asc order*/
         var CharacterComparator: Comparator<ComicCharacter> = Comparator { comicCharacter1, comicCharacter2 ->
-            val char1 = comicCharacter1.name?.toLowerCase() as String
-            val char2 = comicCharacter2.name?.toLowerCase() as String
+            val char1 = comicCharacter1.name?.toLowerCase(Locale.getDefault()) as String
+            val char2 = comicCharacter2.name?.toLowerCase(Locale.getDefault()) as String
 
             char1.compareTo(char2)
         }

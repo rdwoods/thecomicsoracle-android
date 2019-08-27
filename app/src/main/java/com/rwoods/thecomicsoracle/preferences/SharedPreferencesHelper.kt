@@ -12,27 +12,28 @@ import com.rwoods.thecomicsoracle.R
 
 class SharedPreferencesHelper(private val application: Application) {
 
-    private val mPreferences: SharedPreferences
+    private val preferences: SharedPreferences
 
     init {
-        mPreferences = application.getSharedPreferences(SharedPreferencesHelper.PREFERENCE_FILE, Context.MODE_PRIVATE)
+        preferences = application.getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE)
     }
 
 
     fun setSavedSearchResults(savedSearchTerm: String, savedData: String) {
 
-        mPreferences.edit()
+        preferences.edit()
                 .putString(application.getString(R.string.saved_character_search_term), savedSearchTerm)
                 .putString(application.getString(R.string.saved_character_results), savedData)
                 .apply()
     }
 
     val savedSearchTerm: String
-        get() = mPreferences.getString(application.getString(R.string.saved_character_search_term), "")
+        get() = preferences.getString(application.getString(R.string.saved_character_search_term), "")
+                ?: run { "" }
 
 
     fun clearSearchResultsPreferences() {
-        mPreferences.edit()
+        preferences.edit()
                 .remove(application.getString(R.string.saved_character_search_term))
                 .remove(application.getString(R.string.saved_character_results))
                 .apply()

@@ -24,8 +24,10 @@ class CharacterDescriptionWebViewActivity : AppCompatActivity() {
 
         val args = intent.extras
 
-        if (args != null) {
-            characterDescription = String(args.getByteArray(Constants.CHARACTER), StandardCharsets.UTF_8)
+        args?.let {bundle ->
+            bundle.getByteArray(Constants.CHARACTER)?.apply {
+                characterDescription = String(this, StandardCharsets.UTF_8)
+            }
         }
 
         webViewDescription.settings.loadWithOverviewMode = true

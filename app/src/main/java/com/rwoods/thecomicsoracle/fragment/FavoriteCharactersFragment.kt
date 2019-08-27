@@ -17,10 +17,10 @@ import com.rwoods.thecomicsoracle.adapter.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.model.ComicCharacter
 import com.rwoods.thecomicsoracle.util.Constants
 
-*/
+
 /**
  * Created by rahmanwoods on 6/22/16.
- *//*
+ */
 
 class FavoriteCharactersFragment : Fragment() {
     private var favComicCharacterAdapter: ComicCharacterAdapter? = null
