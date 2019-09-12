@@ -36,7 +36,7 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
 
         moshi = Moshi.Builder().build()
         val type = Types.newParameterizedType(List::class.java, ComicCharacter::class.java)
-        jsonAdapter = moshi!!.adapter<List<ComicCharacter>>(type)
+        jsonAdapter = moshi?.adapter<List<ComicCharacter>>(type)
     }
 
 
@@ -69,7 +69,7 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
     }
 
     fun getSavedData(): String? {
-        return jsonAdapter!!.toJson(savedCharacters)
+        return jsonAdapter?.toJson(savedCharacters)
     }
 
 

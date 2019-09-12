@@ -57,10 +57,10 @@ class CharacterSearchFragment : Fragment() {
                 viewModel.clearSearchResultsPreferences()
 
                 try {
-                    val savedSearchTerm = characterSearchView!!.query.toString()
+                    val savedSearchTerm = characterSearchView?.query.toString()
                     val savedData = viewModel.getSavedData()
 
-                    viewModel.setSavedSearchResults(savedSearchTerm, savedData!!)
+                    viewModel.setSavedSearchResults(savedSearchTerm, savedData?.let { it } ?: run { "" })
 
                 } catch (e: Exception) {
                     e.printStackTrace()

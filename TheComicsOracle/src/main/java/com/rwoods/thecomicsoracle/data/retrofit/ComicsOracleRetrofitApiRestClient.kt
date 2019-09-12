@@ -54,13 +54,12 @@ object ComicsOracleRetrofitApiRestClient {
                 })*/
                 .build()
 
-        moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.ENV)
-                .addConverterFactory(MoshiConverterFactory.create(moshi!!).asLenient())
+                .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().add(KotlinJsonAdapterFactory()).build()).asLenient())
                 .client(client)
                 .build()
 
-        apiClient = retrofit!!.create(ComicsOracleApiService::class.java)
+        apiClient = retrofit?.create(ComicsOracleApiService::class.java)
     }
 }

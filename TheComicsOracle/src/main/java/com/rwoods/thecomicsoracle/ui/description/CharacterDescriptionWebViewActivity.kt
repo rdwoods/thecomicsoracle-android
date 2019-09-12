@@ -18,7 +18,11 @@ class CharacterDescriptionWebViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_character_description_web_view)
 
         webViewDescription.setPadding(0, 0, 0, 0)
-        webViewDescription.setInitialScale(getScale())
+
+        getScale()?.apply {
+            webViewDescription.setInitialScale(this)
+        }
+
 
         var characterDescription = ""
 
@@ -40,14 +44,14 @@ class CharacterDescriptionWebViewActivity : AppCompatActivity() {
         webViewDescription.loadData(mBuilder.toString(), "text/html", "utf-8")
     }
 
-    private fun getScale(): Int {
+    private fun getScale(): Int? {
         val size = Point()
         (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getSize(size)
         val width = size.x.toDouble()
         val height = size.y.toDouble()
 
         var `val`: Double? = width / 480
-        `val` = `val`!! * 100.0
-        return `val`.toInt()
+        `val` = `val`?.times(100.0)
+        return `val`?.toInt()
     }
 }

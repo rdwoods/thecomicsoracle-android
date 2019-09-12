@@ -37,8 +37,10 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
         val cookieMap = ComicsOracleRetrofitApiRestClient.accessibleCookieStore
 
         for (key in cookieMap.keys) {
-            for (cookie in cookieMap[key]!!) {
-                cookies.add(cookie)
+            cookieMap[key]?.apply {
+                for (cookie in this) {
+                    cookies.add(cookie)
+                }
             }
         }
 
@@ -51,11 +53,14 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
 
         var cookieValue: String? = null
         for (key in cookieMap.keys) {
-            for (cookie in cookieMap[key]!!) {
-                if (cookie.name().contains(cookieName)) {
-                    cookieValue = cookie.value()
+            cookieMap[key]?.apply {
+                for (cookie in this) {
+                    if (cookie.name().contains(cookieName)) {
+                        cookieValue = cookie.value()
+                    }
                 }
             }
+
         }
 
         return cookieValue as String

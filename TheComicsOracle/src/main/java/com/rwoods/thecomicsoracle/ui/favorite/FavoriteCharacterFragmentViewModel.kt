@@ -22,6 +22,6 @@ class FavoriteCharacterFragmentViewModel(internal var application: Application) 
 
         moshi = Moshi.Builder().build()
         val type = Types.newParameterizedType(List::class.java, ComicCharacter::class.java)
-        jsonAdapter = moshi!!.adapter<List<ComicCharacter>>(type)
+        jsonAdapter = moshi?.adapter<List<ComicCharacter>>(type)
     }
 }

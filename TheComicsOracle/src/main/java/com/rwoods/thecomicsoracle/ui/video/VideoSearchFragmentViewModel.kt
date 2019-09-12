@@ -31,7 +31,7 @@ class VideoSearchFragmentViewModel(internal var application: Application) : Comi
 
         moshi = Moshi.Builder().build()
         val type = Types.newParameterizedType(List::class.java, Video::class.java)
-        jsonAdapter = moshi!!.adapter<List<Video>>(type)
+        jsonAdapter = moshi?.adapter<List<Video>>(type)
     }
 
     fun getVideosFromRest(searchText: String) {
