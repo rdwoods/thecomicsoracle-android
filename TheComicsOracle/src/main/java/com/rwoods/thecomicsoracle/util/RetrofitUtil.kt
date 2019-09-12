@@ -14,7 +14,7 @@ import java.io.File
 object RetrofitUtil {
 
     private val baseUrl: String
-        get() = BuildConfig.ENV
+        get() = BuildConfig.BASE_URL
 
     fun formatAccessToken(@NonNull accessToken: String): String {
         return String.format("Bearer %s", accessToken)

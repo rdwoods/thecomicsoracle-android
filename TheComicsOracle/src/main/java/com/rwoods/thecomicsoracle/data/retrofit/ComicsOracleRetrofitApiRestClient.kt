@@ -55,7 +55,7 @@ object ComicsOracleRetrofitApiRestClient {
                 .build()
 
         retrofit = Retrofit.Builder()
-                .baseUrl(BuildConfig.ENV)
+                .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().add(KotlinJsonAdapterFactory()).build()).asLenient())
                 .client(client)
                 .build()
