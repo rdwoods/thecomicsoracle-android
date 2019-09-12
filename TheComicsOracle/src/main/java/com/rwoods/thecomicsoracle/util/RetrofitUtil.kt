@@ -3,7 +3,7 @@ package com.rwoods.thecomicsoracle.util
 import android.content.Context
 import androidx.annotation.NonNull
 import com.rwoods.thecomicsoracle.BuildConfig
-import com.rwoods.thecomicsoracle.interceptor.CacheInterceptor
+import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import okhttp3.Cache

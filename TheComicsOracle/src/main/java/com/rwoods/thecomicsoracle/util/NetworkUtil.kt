@@ -6,8 +6,7 @@ package com.rwoods.thecomicsoracle.util
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.rwoods.thecomicsoracle.api.ComicsOracleRetrofitApiRestClient
-import com.rwoods.thecomicsoracle.encryption.AesEncrypt
+import com.rwoods.thecomicsoracle.data.retrofit.ComicsOracleRetrofitApiRestClient
 import okhttp3.Cookie
 import java.util.*
 

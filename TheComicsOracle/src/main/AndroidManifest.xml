@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:name=".application.ComicsOracleApplication"
+        android:name=".ui.ComicsOracleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -28,7 +28,7 @@
             android:value="com.rwoods.thecomicsoracle"/>
 
         <activity
-            android:name=".activity.ComicsOracleMainActivity"
+            android:name="com.rwoods.thecomicsoracle.ui.base.ComicsOracleMainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -47,7 +47,7 @@
 
 
         <receiver
-            android:name=".network.NetworkChangeReceiver"
+            android:name=".data.receiver.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
@@ -56,12 +56,12 @@
         </receiver>
 
         <activity
-            android:name=".activity.VideoViewActivity">
+            android:name="com.rwoods.thecomicsoracle.ui.video.VideoViewActivity">
         </activity>
 
 
         <activity
-            android:name=".activity.CharacterDescriptionWebViewActivity">
+            android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity">
         </activity>
     </application>
 
