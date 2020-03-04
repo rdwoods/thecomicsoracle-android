@@ -36,27 +36,38 @@ class ComicsOracleMainActivity : AppCompatActivity() {
         setupNavigation()
     }
 
-    private fun setupViewPager() {
+    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_comics_oracle_main, menu)
+        return true
+    }*/
 
-        val comicsOracleSectionPagerAdapter = ComicsOracleSectionPagerAdapter(supportFragmentManager)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
 
-        val characterSearchFragment: CharacterSearchFragment = CharacterSearchFragment.newInstance()
-        val videoSearchFragment: VideoSearchFragment = VideoSearchFragment.newInstance()
-        //val favoriteCharacterFragment: FavoriteCharactersFragment = FavoriteCharactersFragment.newInstance()
+        if (id == R.id.action_settings) {
+            return true
+        }
 
-        comicsOracleSectionPagerAdapter.addFragment(characterSearchFragment, getString(R.string.title_character_search))
-        comicsOracleSectionPagerAdapter.addFragment(videoSearchFragment, getString(R.string.title_video_search))
-        //comicsOracleSectionPagerAdapter.addFragment(favoriteCharacterFragment, getString(R.string.title_favorites))
-
-        viewPager.adapter = comicsOracleSectionPagerAdapter
-
-        tabLayout.setupWithViewPager(viewPager)
+        return super.onOptionsItemSelected(item)
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_comics_oracle_main, menu)
-        return true
+    private fun setupNavigation() {
+        val navController = findNavController(R.id.navHostFragment)
+        val appBarConfiguration = AppBarConfiguration(
+                topLevelDestinationIds = setOf (
+                        R.id.characterSearchFragment,
+                        R.id.videoSearchFragment
+                )
+        )
+
+        navController.addOnDestinationChangedListener {
+            controller, destination, arguments ->
+            toolbar.title = navController.currentDestination?.label
+        }
+
+        bottomNavigationView.setupWithNavController(navController)
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     override fun onSupportNavigateUp() =
