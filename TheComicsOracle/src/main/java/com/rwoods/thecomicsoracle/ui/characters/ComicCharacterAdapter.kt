@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui.search
+package com.rwoods.thecomicsoracle.ui.characters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class ComicCharacterJsonAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterJsonAdapter.CharacterViewHolder>() {
+class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
     internal var characters = mutableListOf<ComicCharacter>()
     internal val searchedCharacters = mutableListOf<ComicCharacter>()
     private var clickListener: OnItemClickListener? = null

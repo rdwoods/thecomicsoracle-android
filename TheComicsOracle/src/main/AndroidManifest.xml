@@ -56,11 +56,6 @@
         </receiver>
 
         <activity
-            android:name="com.rwoods.thecomicsoracle.ui.video.VideoViewActivity">
-        </activity>
-
-
-        <activity
             android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity">
         </activity>
     </application>

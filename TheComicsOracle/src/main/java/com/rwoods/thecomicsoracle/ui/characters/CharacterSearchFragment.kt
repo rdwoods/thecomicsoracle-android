@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui.search
+package com.rwoods.thecomicsoracle.ui.characters
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,45 +6,33 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.ui.ComicsOracleMainActivity
+import com.rwoods.thecomicsoracle.ui.ComicsOracleMainViewModel
 import com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.util.Constants
 import kotlinx.android.synthetic.main.fragment_search_results.*
-import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [CharacterSearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CharacterSearchFragment : Fragment() {
 
-    private var characterJsonAdapter: ComicCharacterJsonAdapter? = null
+    private var characterAdapter: ComicCharacterAdapter? = null
 
     private var characterSearchView: SearchView? = null
 
     private var savedSearchTerm: String? = null
 
-    private lateinit var viewModel: CharacterSearchFragmentViewModel
+    private val viewModel: ComicsOracleMainViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null) {
-            val fragmentName = arguments?.getString(FRAGMENT_NAME)
-        }
-
         setHasOptionsMenu(true)
-
-        viewModel = ViewModelProvider(this).get(CharacterSearchFragmentViewModel::class.java)
 
         viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
             progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
@@ -52,7 +40,7 @@ class CharacterSearchFragment : Fragment() {
 
         viewModel.comicCharactersMutableLiveData.observe(this, Observer<MutableList<ComicCharacter>> { comicCharacters ->
             comicCharacters?.run {
-                (recyclerViewResults.adapter as ComicCharacterJsonAdapter).populateAdapter(comicCharacters)
+                (recyclerViewResults.adapter as ComicCharacterAdapter).populateAdapter(comicCharacters)
 
                 viewModel.clearSearchResultsPreferences()
 
@@ -84,32 +72,6 @@ class CharacterSearchFragment : Fragment() {
         menu.clear()
 
         inflater.inflate(R.menu.menu_comics_oracle_main, menu)
-
-        val searchView = SearchView((context as ComicsOracleMainActivity).supportActionBar?.themedContext ?: context)
-
-        menu.findItem(R.id.action_search).apply {
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            actionView = searchView
-        }
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(searchText: String): Boolean {
-
-                characterJsonAdapter?.clear()
-
-                viewModel.getCharacters(searchText.trim { it <= ' ' })
-
-                searchView.clearFocus()
-
-                return false
-            }
-
-            override fun onQueryTextChange(searchText: String): Boolean {
-                return false
-            }
-        })
-
-        searchView.setOnClickListener {view ->  }
     }
 
 
@@ -120,19 +82,19 @@ class CharacterSearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        characterJsonAdapter = ComicCharacterJsonAdapter(requireContext())
+        characterAdapter = ComicCharacterAdapter(requireContext())
         recyclerViewResults.setHasFixedSize(true)
         recyclerViewResults.layoutManager = LinearLayoutManager(requireContext())
         recyclerViewResults.visibility = View.GONE
 
         savedSearchTerm = viewModel.getSavedSearchTerm()
 
-        characterJsonAdapter?.setOnItemClickListener(object: ComicCharacterJsonAdapter.OnItemClickListener {
+        characterAdapter?.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                val descr = characterJsonAdapter?.searchedCharacters?.get(position)?.description
+                val descr = characterAdapter?.searchedCharacters?.get(position)?.description
 
                 descr?.apply {
                     val byte = this.toByteArray(StandardCharsets.UTF_8)
@@ -146,27 +108,23 @@ class CharacterSearchFragment : Fragment() {
             }
         })
 
-        recyclerViewResults.adapter = characterJsonAdapter
-    }
+        recyclerViewResults.adapter = characterAdapter
 
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(searchText: String): Boolean {
 
-    companion object {
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val FRAGMENT_NAME = "character"
+                characterAdapter?.clear()
 
-        private val LOGGER = LoggerFactory.getLogger(CharacterSearchFragment::class.java)
+                viewModel.getCharacters(searchText.trim { it <= ' ' })
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
+                searchView.clearFocus()
 
-         * @return A new instance of fragment MadSkilzByCharacterFragment.
-         */
-        fun newInstance(): CharacterSearchFragment {
-            val fragment = CharacterSearchFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
+                return false
+            }
+
+            override fun onQueryTextChange(searchText: String): Boolean {
+                return false
+            }
+        })
     }
 }

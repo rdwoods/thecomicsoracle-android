@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui.video
+package com.rwoods.thecomicsoracle.ui.videos
 
 import android.content.Context
 import android.view.LayoutInflater

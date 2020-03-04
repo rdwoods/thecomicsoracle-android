@@ -1,16 +1,19 @@
-package com.rwoods.thecomicsoracle.ui.search
+package com.rwoods.thecomicsoracle.ui
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
+import com.rwoods.thecomicsoracle.data.model.Video
 import com.rwoods.thecomicsoracle.data.repository.ComicsOracleRepository
 import com.rwoods.thecomicsoracle.ui.base.ComicsOracleBaseViewModel
+import com.rwoods.thecomicsoracle.ui.characters.ComicCharacterAdapter
+import com.rwoods.thecomicsoracle.ui.videos.VideoAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import kotlinx.coroutines.*
 
-class CharacterSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application) {
+class ComicsOracleMainViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application) {
 
     /**
      * This is the job for all coroutines started by this ViewModel.
@@ -29,18 +32,22 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
 
     internal var moshi: Moshi
 
-    internal var jsonAdapter: ComicCharacterJsonAdapter
+    internal var characterAdapter: ComicCharacterAdapter
+    internal var videoAdapter: VideoAdapter
 
     internal var comicCharactersMutableLiveData =  MutableLiveData<MutableList<ComicCharacter>>()
 
     internal var savedCharacters = mutableListOf<ComicCharacter>()
+
+    internal var videosMutableLiveData = MutableLiveData<MutableList<Video>>()
 
     init {
         comicsOracleRepo = ComicsOracleRepository(application)
 
         moshi = Moshi.Builder().build()
         val type = Types.newParameterizedType(List::class.java, ComicCharacter::class.java)
-        jsonAdapter = ComicCharacterJsonAdapter(application)
+        characterAdapter = ComicCharacterAdapter(application)
+        videoAdapter = VideoAdapter(application)
     }
 
 
@@ -65,9 +72,30 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
         }
     }
 
+    fun getVideos(searchText: String) {
+
+        progressBarLiveData.postValue(true)
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                // Dispatchers.IO
+                /* perform blocking network IO here */
+                val videos = comicsOracleRepo.getVideosFromRest(searchText)
+                progressBarLiveData.postValue(false)
+
+                videos?.run {
+                    videosMutableLiveData.postValue(this)
+                } ?: run {
+                    progressBarLiveData.postValue(false)
+                    videosMutableLiveData.postValue(null)
+                }
+            }
+        }
+    }
+
 
     fun getSavedData(): String? {
-        return jsonAdapter.toString()
+        return characterAdapter.toString()
     }
 
 
