@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui
+package com.rwoods.thecomicsoracle
 
 import android.app.Application
 import android.content.Context

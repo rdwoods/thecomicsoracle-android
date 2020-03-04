@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui.base
+package com.rwoods.thecomicsoracle.ui
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
+import com.rwoods.thecomicsoracle.ui.base.ComicsOracleSectionPagerAdapter
 import com.rwoods.thecomicsoracle.ui.search.CharacterSearchFragment
 import com.rwoods.thecomicsoracle.ui.video.VideoSearchFragment
 import com.rwoods.thecomicsoracle.util.Constants

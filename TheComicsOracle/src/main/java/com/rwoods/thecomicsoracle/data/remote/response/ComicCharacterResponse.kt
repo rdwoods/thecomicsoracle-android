@@ -6,5 +6,5 @@ import com.squareup.moshi.Json
 data class ComicCharacterResponse (
 
     @Json(name = "results")
-    val comicCharacters: List<ComicCharacter>?
+    val comicCharacters: MutableList<ComicCharacter>?
 )

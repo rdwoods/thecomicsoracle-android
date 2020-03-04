@@ -7,11 +7,11 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.Video
-import com.rwoods.thecomicsoracle.ui.base.ComicsOracleMainActivity
+import com.rwoods.thecomicsoracle.ui.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.util.Constants
 import kotlinx.android.synthetic.main.fragment_search_results.*
 import org.slf4j.LoggerFactory
@@ -47,15 +47,15 @@ class VideoSearchFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        viewModel = ViewModelProviders.of(this).get(VideoSearchFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(VideoSearchFragmentViewModel::class.java)
 
         viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
             progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
         })
 
-        viewModel.videos.observe(this, Observer<ArrayList<Video>> { videos ->
+        viewModel.videosMutableLiveData.observe(this, Observer<MutableList<Video>> { videos ->
             videos?.apply {
-                (recyclerViewResults.adapter as VideoAdapter).populateAdapter(videos)
+                (recyclerViewResults.adapter as VideoAdapter).populateAdapter(this)
 
                 recyclerViewResults.visibility = View.VISIBLE
             } ?: run {
@@ -88,7 +88,7 @@ class VideoSearchFragment : Fragment() {
 
                 videoAdapter?.clear()
 
-                viewModel.getVideosFromRest(searchText.trim { it <= ' ' })
+                viewModel.getVideos(searchText.trim { it <= ' ' })
 
                 searchView.clearFocus()
 

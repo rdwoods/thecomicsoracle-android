@@ -14,9 +14,9 @@ import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 /**
  * Created by rahmanwoods on 5/12/15.
  */
-class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterAdapter.CharacterViewHolder>() {
-    internal var characters: ArrayList<ComicCharacter> = ArrayList()
-    internal val searchedCharacters: ArrayList<ComicCharacter> = ArrayList()
+class ComicCharacterJsonAdapter(private val context: Context) : RecyclerView.Adapter<ComicCharacterJsonAdapter.CharacterViewHolder>() {
+    internal var characters = mutableListOf<ComicCharacter>()
+    internal val searchedCharacters = mutableListOf<ComicCharacter>()
     private var clickListener: OnItemClickListener? = null
 
 
@@ -25,7 +25,7 @@ class ComicCharacterAdapter(private val context: Context) : RecyclerView.Adapter
         notifyItemInserted(searchedCharacters.size - 1)
     }
 
-    fun populateAdapter(characterSearchResults: ArrayList<ComicCharacter>){
+    fun populateAdapter(characterSearchResults: MutableList<ComicCharacter>){
         characters.clear()
 
         for (comicCharacter in characterSearchResults){

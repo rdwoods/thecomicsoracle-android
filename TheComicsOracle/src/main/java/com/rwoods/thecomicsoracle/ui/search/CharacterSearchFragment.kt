@@ -7,11 +7,11 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.ui.base.ComicsOracleMainActivity
+import com.rwoods.thecomicsoracle.ui.ComicsOracleMainActivity
 import com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.util.Constants
 import kotlinx.android.synthetic.main.fragment_search_results.*
@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets
  */
 class CharacterSearchFragment : Fragment() {
 
-    private var characterAdapter: ComicCharacterAdapter? = null
+    private var characterJsonAdapter: ComicCharacterJsonAdapter? = null
 
     private var characterSearchView: SearchView? = null
 
@@ -44,15 +44,15 @@ class CharacterSearchFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        viewModel = ViewModelProviders.of(this).get(CharacterSearchFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CharacterSearchFragmentViewModel::class.java)
 
         viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
             progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
         })
 
-        viewModel.comicCharacters.observe(this, Observer<ArrayList<ComicCharacter>> { comicCharacters ->
-            comicCharacters?.apply {
-                (recyclerViewResults.adapter as ComicCharacterAdapter).populateAdapter(comicCharacters)
+        viewModel.comicCharactersMutableLiveData.observe(this, Observer<MutableList<ComicCharacter>> { comicCharacters ->
+            comicCharacters?.run {
+                (recyclerViewResults.adapter as ComicCharacterJsonAdapter).populateAdapter(comicCharacters)
 
                 viewModel.clearSearchResultsPreferences()
 
@@ -95,9 +95,9 @@ class CharacterSearchFragment : Fragment() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(searchText: String): Boolean {
 
-                characterAdapter?.clear()
+                characterJsonAdapter?.clear()
 
-                viewModel.getCharactersFromRest(searchText.trim { it <= ' ' })
+                viewModel.getCharacters(searchText.trim { it <= ' ' })
 
                 searchView.clearFocus()
 
@@ -120,19 +120,19 @@ class CharacterSearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        characterAdapter = ComicCharacterAdapter(requireContext())
+        characterJsonAdapter = ComicCharacterJsonAdapter(requireContext())
         recyclerViewResults.setHasFixedSize(true)
         recyclerViewResults.layoutManager = LinearLayoutManager(requireContext())
         recyclerViewResults.visibility = View.GONE
 
         savedSearchTerm = viewModel.getSavedSearchTerm()
 
-        characterAdapter?.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
+        characterJsonAdapter?.setOnItemClickListener(object: ComicCharacterJsonAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
                 val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
                 val bundle = Bundle()
-                val descr = characterAdapter?.searchedCharacters?.get(position)?.description
+                val descr = characterJsonAdapter?.searchedCharacters?.get(position)?.description
 
                 descr?.apply {
                     val byte = this.toByteArray(StandardCharsets.UTF_8)
@@ -146,7 +146,7 @@ class CharacterSearchFragment : Fragment() {
             }
         })
 
-        recyclerViewResults.adapter = characterAdapter
+        recyclerViewResults.adapter = characterJsonAdapter
     }
 
 

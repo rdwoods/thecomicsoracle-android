@@ -2,74 +2,72 @@ package com.rwoods.thecomicsoracle.ui.search
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.data.remote.response.ComicCharacterResponse
 import com.rwoods.thecomicsoracle.data.repository.ComicsOracleRepository
 import com.rwoods.thecomicsoracle.ui.base.ComicsOracleBaseViewModel
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.*
 
 class CharacterSearchFragmentViewModel(internal var application: Application) : ComicsOracleBaseViewModel(application) {
 
-    internal var searchedComicCharacterList: ArrayList<ComicCharacter>? = null
+    /**
+     * This is the job for all coroutines started by this ViewModel.
+     * Cancelling this job will cancel all coroutines started by this ViewModel.
+     */
+    private val viewModelJob = SupervisorJob()
 
-    internal var searchedComicsCharacters: MutableLiveData<ArrayList<ComicCharacter>>? = null
+    /**
+     * This is the main scope for all coroutines launched by MainViewModel.
+     * Since we pass viewModelJob, you can cancel all coroutines
+     * launched by uiScope by calling viewModelJob.cancel()
+     */
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     var progressBarLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
-    internal var moshi: Moshi? = null
+    internal var moshi: Moshi
 
-    internal var jsonAdapter: JsonAdapter<List<ComicCharacter>>? = null
+    internal var jsonAdapter: ComicCharacterJsonAdapter
 
-    internal var comicCharacters =  MutableLiveData<ArrayList<ComicCharacter>>()
+    internal var comicCharactersMutableLiveData =  MutableLiveData<MutableList<ComicCharacter>>()
 
-    internal var savedCharacters: ArrayList<ComicCharacter>? = null
+    internal var savedCharacters = mutableListOf<ComicCharacter>()
 
     init {
         comicsOracleRepo = ComicsOracleRepository(application)
 
-        searchedComicCharacterList = ArrayList()
-
         moshi = Moshi.Builder().build()
         val type = Types.newParameterizedType(List::class.java, ComicCharacter::class.java)
-        jsonAdapter = moshi?.adapter<List<ComicCharacter>>(type)
+        jsonAdapter = ComicCharacterJsonAdapter(application)
     }
 
 
-    fun getCharactersFromRest(searchText: String) {
-
+    fun getCharacters(searchText: String) {
         progressBarLiveData.postValue(true)
 
-        val filteredCharacterName = "name:$searchText"
-        comicsOracleRepo.retrofitWrapper.createComicsOracleService().getCharacterByName(filteredCharacterName).enqueue(object : Callback<ComicCharacterResponse> {
-
-            override fun onResponse(call: Call<ComicCharacterResponse>, response: Response<ComicCharacterResponse>) {
-                val characters = response.body()?.comicCharacters as? ArrayList<ComicCharacter>
-
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                // Dispatchers.IO
+                /* perform blocking network IO here */
+                val characters = comicsOracleRepo.getCharactersFromRest(searchText)
                 progressBarLiveData.postValue(false)
 
-                characters?.apply {
-                    savedCharacters = characters
-                    comicCharacters.postValue(this)
+                characters?.run {
+                    savedCharacters = this
+                    comicCharactersMutableLiveData.postValue(this)
                 } ?: run {
-                    comicCharacters.postValue(null)
+                    progressBarLiveData.postValue(false)
+                    comicCharactersMutableLiveData.postValue(null)
                 }
             }
-
-            override fun onFailure(call: Call<ComicCharacterResponse>, t: Throwable) {
-                progressBarLiveData.postValue(false)
-                comicCharacters.postValue(null)
-            }
-
-        })
+        }
     }
 
+
     fun getSavedData(): String? {
-        return jsonAdapter?.toJson(savedCharacters)
+        return jsonAdapter.toString()
     }
 
 
@@ -84,4 +82,6 @@ class CharacterSearchFragmentViewModel(internal var application: Application) : 
     fun getSavedSearchTerm(): String? {
         return comicsOracleRepo.sharedPreferencesHelper.savedSearchTerm
     }
+
+
 }

@@ -3,8 +3,7 @@ package com.rwoods.thecomicsoracle.data.service
 import com.rwoods.thecomicsoracle.BuildConfig
 import com.rwoods.thecomicsoracle.data.remote.response.ComicCharacterResponse
 import com.rwoods.thecomicsoracle.data.remote.response.VideoResponse
-
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,8 +13,8 @@ import retrofit2.http.Query
 interface ComicsOracleApiService {
 
     @GET("characters/?api_key=" + BuildConfig.API_KEY + "&format=json")
-    fun getCharacterByName(@Query("filter") characterName: String): Call<ComicCharacterResponse>
+    suspend fun getCharacterByNameAsync(@Query("filter") characterName: String): Response<ComicCharacterResponse>
 
     @GET("videos/?api_key=" + BuildConfig.API_KEY + "&format=json")
-    fun getVideoByName(@Query("filter") videoName: String): Call<VideoResponse>
+    suspend fun getVideoByNameAsync(@Query("filter") videoName: String): Response<VideoResponse>
 }

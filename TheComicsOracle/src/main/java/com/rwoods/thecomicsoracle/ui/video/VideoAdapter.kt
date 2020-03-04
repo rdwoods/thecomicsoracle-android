@@ -15,8 +15,8 @@ import com.rwoods.thecomicsoracle.data.model.Video
  * Created by rahmanwoods on 5/12/15.
  */
 class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
-    internal var videos: ArrayList<Video> = ArrayList()
-    var searchedVideos: ArrayList<Video> = ArrayList()
+    internal var videos = mutableListOf<Video>()
+    var searchedVideos = mutableListOf<Video>()
     private var clickListener: OnItemClickListener? = null
 
 
@@ -25,7 +25,7 @@ class VideoAdapter(private val context: Context) : RecyclerView.Adapter<VideoAda
         notifyItemInserted(searchedVideos.size - 1)
     }
 
-    fun populateAdapter(videoSearchResults: ArrayList<Video>){
+    fun populateAdapter(videoSearchResults: MutableList<Video>){
         videos.clear()
 
         for (video in videoSearchResults){

@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 28
@@ -16,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId "com.rwoods.thecomicsoracle"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -25,7 +26,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            debuggable false
+            applicationIdSuffix ".release"
             buildConfigField("String", "BASE_URL", '"https://comicvine.gamespot.com/api/"')
             buildConfigField("String", "API_KEY", '"310286c7441deb2eac2cc1aeae01393b69c99452"')
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -92,33 +95,46 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    def lifecycle_version = "2.1.0"
-    def glide_version = "4.9.0"
+    def lifecycle_version = '2.2.0'
+    def glide_version = '4.11.0'
+    def room_version = "2.2.4"
 
     // Android Support dependencies
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+    implementation 'com.google.android.material:material:1.2.0-alpha05'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
 
-    implementation 'androidx.core:core-ktx:1.1.0'
+
+    // Kotlin
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 
     // Android LifeCycle
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
+    //Room
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
+
     // Square dependencies
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:retrofit-mock:2.0.1'
-    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
-    implementation 'com.squareup.moshi:moshi:1.5.0'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.3.0'
-    implementation 'com.squareup.moshi:moshi-kotlin:1.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+    implementation 'com.squareup.retrofit2:retrofit-mock:2.7.1'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
+    implementation 'com.squareup.moshi:moshi:1.9.2'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.7.1'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.9.2'
 
     // Apache Collections Commons
-    implementation 'org.apache.commons:commons-lang3:3.7'
-    implementation 'org.apache.commons:commons-collections4:4.0'
-    implementation 'commons-codec:commons-codec:1.10'
+    implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'commons-codec:commons-codec:20041127.091804'
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
@@ -127,14 +143,19 @@ dependencies {
     // Rx Java
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'io.reactivex:rxjava:1.1.6'
-    implementation 'org.slf4j:slf4j-simple:1.7.13'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:17.2.0'
-    implementation 'com.google.firebase:firebase-database:19.1.0'
-    implementation 'com.google.firebase:firebase-auth:19.0.0'
-    implementation 'com.google.firebase:firebase-core:17.2.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation 'com.google.firebase:firebase-core:17.2.3'
+    implementation 'com.google.firebase:firebase-database:19.2.1'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-core:17.2.3'
+
+    // Recommended: Add the Firebase SDK for Google Analytics.
+    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+
+    // Add the Firebase SDK for Crashlytics.
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -142,12 +163,8 @@ dependencies {
     // Google Authentication
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
-    // Butterknife
-    implementation 'com.jakewharton:butterknife:10.1.0'
-    kapt 'com.jakewharton:butterknife-compiler:10.1.0'
-
     // JUnit
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito:mockito-core:2.23.4"
 
     // Android JUnit Runner
@@ -157,11 +174,11 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.2.0'
 
     // Espresso core
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0') {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.2.0') {
         exclude module: 'support-annotations'
     }
     // Espresso-contrib for DatePicker, RecyclerView, Drawer actions, Accessibility checks, CountingIdlingResource
-    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.1.0') {
+    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.2.0') {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
         exclude module: 'support-v13'
@@ -171,9 +188,6 @@ dependencies {
     }
 
     androidTestImplementation 'androidx.annotation:annotation:1.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"
-
 }
 
 

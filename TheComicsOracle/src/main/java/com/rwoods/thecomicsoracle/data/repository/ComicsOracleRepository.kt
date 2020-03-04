@@ -1,6 +1,8 @@
 package com.rwoods.thecomicsoracle.data.repository
 
 import android.app.Application
+import com.rwoods.thecomicsoracle.data.model.ComicCharacter
+import com.rwoods.thecomicsoracle.data.model.Video
 import com.rwoods.thecomicsoracle.data.preferences.SharedPreferencesHelper
 import com.rwoods.thecomicsoracle.data.retrofit.RetrofitWrapper
 
@@ -10,11 +12,37 @@ import com.rwoods.thecomicsoracle.data.retrofit.RetrofitWrapper
 
  */
 
-class ComicsOracleRepository(application: Application) {
+class ComicsOracleRepository(application: Application) : BaseRepository() {
     val sharedPreferencesHelper: SharedPreferencesHelper = SharedPreferencesHelper(application)
     //private var firebaseDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     var retrofitWrapper: RetrofitWrapper = RetrofitWrapper(application)
+
+    val characterApi = retrofitWrapper.createComicsOracleService()
+
+
+    suspend fun getCharactersFromRest(searchText: String): MutableList<ComicCharacter>? {
+
+        val filteredCharacterName = "name:$searchText"
+
+        val charactersResponse = safeApiCall(
+                call = { characterApi.getCharacterByNameAsync(filteredCharacterName) },
+                errorMessage = "Error Fetching Characters")
+
+        return charactersResponse?.comicCharacters?.toMutableList()
+    }
+
+
+    suspend fun getVideosFromRest(searchText: String): MutableList<Video>? {
+
+        val filteredCharacterName = "name:$searchText"
+
+        val videoResponse = safeApiCall(
+                call = { characterApi.getVideoByNameAsync(filteredCharacterName) },
+                errorMessage = "Error Fetching Characters")
+
+        return videoResponse?.videos?.toMutableList()
+    }
 
     /*internal fun writeFavoriteToDatabase(character : ComicCharacter) {
         val ref = firebaseDatabase.child("users").child("rdwoods1")

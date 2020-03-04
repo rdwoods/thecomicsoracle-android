@@ -7,7 +7,7 @@
     android:background="@android:color/transparent"
     android:keepScreenOn="false"
     android:orientation="vertical"
-    tools:mView="com.rwoods.thecomicsoracle.ui.base.ComicsOracleMainActivity">
+    tools:mView="com.rwoods.thecomicsoracle.ui.ComicsOracleMainActivity">
 
     <ProgressBar
         android:id="@+id/progressIndicator"

@@ -55,8 +55,8 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
         for (key in cookieMap.keys) {
             cookieMap[key]?.apply {
                 for (cookie in this) {
-                    if (cookie.name().contains(cookieName)) {
-                        cookieValue = cookie.value()
+                    if (cookie.name.contains(cookieName)) {
+                        cookieValue = cookie.value
                     }
                 }
             }

@@ -17,3 +17,7 @@
 #}
 
 -keep class **$$ViewBinder { *; }
+-dontwarn org.jetbrains.annotations.**
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class com.rwoods.thecomicsoracle.** { <init>(...); <fields>;}
+-keep @android.support.annotation.Keep class * {*;}
