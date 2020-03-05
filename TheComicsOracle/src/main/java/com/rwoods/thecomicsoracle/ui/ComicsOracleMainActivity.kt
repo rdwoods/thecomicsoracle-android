@@ -32,7 +32,8 @@ class ComicsOracleMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comics_oracle_main)
         setSupportActionBar(toolbar)
-        //setUpActionBar()
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.title = "The Comics Oracle"
         setupNavigation()
     }
 
@@ -61,13 +62,13 @@ class ComicsOracleMainActivity : AppCompatActivity() {
                 )
         )
 
-        navController.addOnDestinationChangedListener {
+        /*navController.addOnDestinationChangedListener {
             controller, destination, arguments ->
             toolbar.title = navController.currentDestination?.label
-        }
+        }*/
 
-        bottomNavigationView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
+        bottomNavigationView.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp() =

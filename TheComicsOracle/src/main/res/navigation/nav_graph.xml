@@ -8,14 +8,12 @@
     <fragment
         android:id="@+id/characterSearchFragment"
         tools:layout="@layout/fragment_search_results"
-        android:name="com.rwoods.thecomicsoracle.ui.characters.CharacterSearchFragment"
-        android:label="Characters" />
+        android:name="com.rwoods.thecomicsoracle.ui.characters.CharacterSearchFragment" />
 
     <fragment
         android:id="@+id/videoSearchFragment"
         tools:layout="@layout/fragment_search_results"
-        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoSearchFragment"
-        android:label="Videos" >
+        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoSearchFragment">
         <action
             android:id="@+id/action_to_video_view"
             app:destination="@id/videoViewFragment"/>
@@ -24,8 +22,7 @@
     <fragment
         android:id="@+id/videoViewFragment"
         tools:layout="@layout/fragment_video_view"
-        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoViewFragment"
-        android:label="Videos" >
+        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoViewFragment">
 
         <argument
             android:name="videoUrl"
