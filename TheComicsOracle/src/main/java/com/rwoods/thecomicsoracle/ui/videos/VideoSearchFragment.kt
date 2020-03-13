@@ -25,10 +25,6 @@ class VideoSearchFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
-            progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
-        })
-
         viewModel.videosMutableLiveData.observe(this, Observer<MutableList<Video>> { videos ->
             videos?.apply {
                 (recyclerViewResults.adapter as VideoAdapter).populateAdapter(this)

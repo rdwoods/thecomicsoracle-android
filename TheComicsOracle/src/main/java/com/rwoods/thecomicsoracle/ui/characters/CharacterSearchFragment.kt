@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
-import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 import com.rwoods.thecomicsoracle.ui.ComicsOracleMainViewModel
 import com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.util.Constants
@@ -34,33 +33,20 @@ class CharacterSearchFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        viewModel.progressBarLiveData.observe(this, Observer<Boolean> {
-            progressIndicator.visibility = if (it) { View.VISIBLE } else { View.GONE }
-        })
+        viewModel.characterSearchLiveData.observe(this, Observer { state ->
+            state ?: return@Observer
 
-        viewModel.comicCharactersMutableLiveData.observe(this, Observer<MutableList<ComicCharacter>> { comicCharacters ->
-            comicCharacters?.run {
-                (recyclerViewResults.adapter as ComicCharacterAdapter).populateAdapter(comicCharacters)
-
-                viewModel.clearSearchResultsPreferences()
-
-                try {
-                    val savedSearchTerm = characterSearchView?.query.toString()
-                    val savedData = viewModel.getSavedData()
-
-                    viewModel.setSavedSearchResults(savedSearchTerm, savedData?.let { it } ?: run { "" })
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            when (state){
+                is CharacterSearchState.LoadingState -> {
+                    renderLoadingState()
                 }
 
-                recyclerViewResults.visibility = View.VISIBLE
-            } ?: run {
+                is CharacterSearchState.DataState -> {
+                    renderDataState(state)
+                }
 
-                activity?.runOnUiThread {
-                    Toast.makeText(activity, "Could not get results", Toast.LENGTH_LONG).show()
-
-                    recyclerViewResults.visibility = View.VISIBLE
+                is CharacterSearchState.ErrorState -> {
+                    renderErrorState(state)
                 }
             }
         })
@@ -126,5 +112,45 @@ class CharacterSearchFragment : Fragment() {
                 return false
             }
         })
+    }
+
+    private fun renderDataState(dataState: CharacterSearchState.DataState) {
+        if (dataState.data.isEmpty()){
+            activity?.runOnUiThread {
+                Toast.makeText(activity, "Could not get results", Toast.LENGTH_LONG).show()
+
+                recyclerViewResults.visibility = View.VISIBLE
+            }
+        } else {
+            (recyclerViewResults.adapter as ComicCharacterAdapter).populateAdapter(dataState.data)
+
+            viewModel.clearSearchResultsPreferences()
+
+            try {
+                val savedSearchTerm = characterSearchView?.query.toString()
+                val savedData = viewModel.getSavedData()
+
+                viewModel.setSavedSearchResults(savedSearchTerm, savedData?.let { it } ?: run { "" })
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            progressIndicator.visibility = View.GONE
+            recyclerViewResults.visibility = View.VISIBLE
+        }
+    }
+
+    private fun renderLoadingState() {
+        progressIndicator.visibility = View.VISIBLE
+    }
+
+    private fun renderErrorState(errorState: CharacterSearchState.ErrorState) {
+        activity?.runOnUiThread {
+            Toast.makeText(activity, "Could not get results", Toast.LENGTH_LONG).show()
+
+            progressIndicator.visibility = View.GONE
+            recyclerViewResults.visibility = View.VISIBLE
+        }
     }
 }

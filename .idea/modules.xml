@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TheComicsOracle/TheComicsOracle.iml" filepath="$PROJECT_DIR$/TheComicsOracle/TheComicsOracle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TheComicsOracle/TheComicsOracle.iml" filepath="$PROJECT_DIR$/TheComicsOracle/TheComicsOracle.iml" group="thecomicsoracle-mobile-android-git/TheComicsOracle" />
       <module fileurl="file://$PROJECT_DIR$/TheComicsOracle/app.iml" filepath="$PROJECT_DIR$/TheComicsOracle/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/git-thecomicsoracle-mobile-android-git.iml" filepath="$PROJECT_DIR$/git-thecomicsoracle-mobile-android-git.iml" />
+      <module fileurl="file://$PROJECT_DIR$/git-thecomicsoracle-mobile-android-git.iml" filepath="$PROJECT_DIR$/git-thecomicsoracle-mobile-android-git.iml" group="thecomicsoracle-mobile-android-git" />
       <module fileurl="file://$PROJECT_DIR$/thecomicsoracle-mobile-android-git.iml" filepath="$PROJECT_DIR$/thecomicsoracle-mobile-android-git.iml" />
     </modules>
   </component>

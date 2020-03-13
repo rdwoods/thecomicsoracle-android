@@ -7,6 +7,7 @@ import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 import com.rwoods.thecomicsoracle.data.model.Video
 import com.rwoods.thecomicsoracle.data.repository.ComicsOracleRepository
 import com.rwoods.thecomicsoracle.ui.base.ComicsOracleBaseViewModel
+import com.rwoods.thecomicsoracle.ui.characters.CharacterSearchState
 import com.rwoods.thecomicsoracle.ui.characters.ComicCharacterAdapter
 import com.rwoods.thecomicsoracle.ui.videos.VideoAdapter
 import com.squareup.moshi.Moshi
@@ -28,18 +29,18 @@ class ComicsOracleMainViewModel(internal var application: Application) : ComicsO
      */
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    var progressBarLiveData: MutableLiveData<Boolean> = MutableLiveData()
-
     internal var moshi: Moshi
 
     internal var characterAdapter: ComicCharacterAdapter
     internal var videoAdapter: VideoAdapter
 
-    internal var comicCharactersMutableLiveData =  MutableLiveData<MutableList<ComicCharacter>>()
-
     internal var savedCharacters = mutableListOf<ComicCharacter>()
 
     internal var videosMutableLiveData = MutableLiveData<MutableList<Video>>()
+
+    internal var characterSearchLiveData = MutableLiveData<CharacterSearchState>()
+
+    internal lateinit var characterSearchState: CharacterSearchState
 
     init {
         comicsOracleRepo = ComicsOracleRepository(application)
@@ -52,41 +53,37 @@ class ComicsOracleMainViewModel(internal var application: Application) : ComicsO
 
 
     fun getCharacters(searchText: String) {
-        progressBarLiveData.postValue(true)
+        characterSearchLiveData.postValue(CharacterSearchState.LoadingState)
 
-        viewModelScope.launch {
+        uiScope.launch {
             withContext(Dispatchers.IO) {
                 // Dispatchers.IO
                 /* perform blocking network IO here */
                 val characters = comicsOracleRepo.getCharactersFromRest(searchText)
-                progressBarLiveData.postValue(false)
 
                 characters?.run {
                     savedCharacters = this
-                    comicCharactersMutableLiveData.postValue(this)
+                    characterSearchState = CharacterSearchState.DataState(this)
                 } ?: run {
-                    progressBarLiveData.postValue(false)
-                    comicCharactersMutableLiveData.postValue(null)
+                    characterSearchState = CharacterSearchState.ErrorState("Error")
                 }
+
+                characterSearchLiveData.postValue(characterSearchState)
             }
         }
     }
 
     fun getVideos(searchText: String) {
 
-        progressBarLiveData.postValue(true)
-
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 // Dispatchers.IO
                 /* perform blocking network IO here */
                 val videos = comicsOracleRepo.getVideosFromRest(searchText)
-                progressBarLiveData.postValue(false)
 
                 videos?.run {
                     videosMutableLiveData.postValue(this)
                 } ?: run {
-                    progressBarLiveData.postValue(false)
                     videosMutableLiveData.postValue(null)
                 }
             }
