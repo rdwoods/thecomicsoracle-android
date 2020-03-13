@@ -1,7 +1,6 @@
 package com.rwoods.thecomicsoracle.util
 
 import android.content.Context
-import androidx.annotation.NonNull
 import com.rwoods.thecomicsoracle.BuildConfig
 import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.squareup.moshi.Moshi
@@ -16,12 +15,12 @@ object RetrofitUtil {
     private val baseUrl: String
         get() = BuildConfig.BASE_URL
 
-    fun formatAccessToken(@NonNull accessToken: String): String {
+    fun formatAccessToken(accessToken: String): String {
         return String.format("Bearer %s", accessToken)
     }
 
 
-    fun buildRetrofitClient(@NonNull ctx: Context): Retrofit {
+    fun buildRetrofitClient(ctx: Context): Retrofit {
 
         val cacheSize = (10 * 1024 * 1024).toLong()
         val httpCacheDirectory = File(ctx.cacheDir, "http-cache")
