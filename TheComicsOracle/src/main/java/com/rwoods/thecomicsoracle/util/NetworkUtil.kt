@@ -17,11 +17,11 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
 
     fun isOnline(context: Context): Boolean {
         when (getConnectivityStatus(context)) {
-            NetworkUtil.TYPE_WIFI -> return true
+            TYPE_WIFI -> return true
 
-            NetworkUtil.TYPE_MOBILE -> return true
+            TYPE_MOBILE -> return true
 
-            NetworkUtil.TYPE_NOT_CONNECTED -> return false
+            TYPE_NOT_CONNECTED -> return false
 
             else -> return false
         }
@@ -94,11 +94,11 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
         fun getConnectivityStatusString(context: Context): String? {
             val conn = getConnectivityStatus(context)
             var status: String? = null
-            if (conn == NetworkUtil.TYPE_WIFI) {
+            if (conn == TYPE_WIFI) {
                 status = "Wifi enabled"
-            } else if (conn == NetworkUtil.TYPE_MOBILE) {
+            } else if (conn == TYPE_MOBILE) {
                 status = "Mobile data enabled"
-            } else if (conn == NetworkUtil.TYPE_NOT_CONNECTED) {
+            } else if (conn == TYPE_NOT_CONNECTED) {
                 status = "Not connected to Internet"
             }
             return status
