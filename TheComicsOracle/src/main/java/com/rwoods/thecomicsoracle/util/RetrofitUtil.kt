@@ -3,9 +3,9 @@ package com.rwoods.thecomicsoracle.util
 import android.content.Context
 import androidx.annotation.NonNull
 import com.rwoods.thecomicsoracle.BuildConfig
-import com.rwoods.thecomicsoracle.interceptor.CacheInterceptor
-import com.squareup.moshi.KotlinJsonAdapterFactory
+import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Cache
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -14,7 +14,7 @@ import java.io.File
 object RetrofitUtil {
 
     private val baseUrl: String
-        get() = BuildConfig.ENV
+        get() = BuildConfig.BASE_URL
 
     fun formatAccessToken(@NonNull accessToken: String): String {
         return String.format("Bearer %s", accessToken)

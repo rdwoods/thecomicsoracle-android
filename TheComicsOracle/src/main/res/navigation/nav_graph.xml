@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/characterSearchFragment">
+
+    <fragment
+        android:id="@+id/characterSearchFragment"
+        tools:layout="@layout/fragment_search_results"
+        android:name="com.rwoods.thecomicsoracle.ui.characters.CharacterSearchFragment" />
+
+    <fragment
+        android:id="@+id/videoSearchFragment"
+        tools:layout="@layout/fragment_search_results"
+        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoSearchFragment">
+        <action
+            android:id="@+id/action_to_video_view"
+            app:destination="@id/videoViewFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/videoViewFragment"
+        tools:layout="@layout/fragment_video_view"
+        android:name="com.rwoods.thecomicsoracle.ui.videos.VideoViewFragment">
+
+        <argument
+            android:name="videoUrl"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>
