@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 
 @Entity
-//@JsonClass(generateAdapter = true)
 data class ComicCharacter(
         @PrimaryKey val id: Int,
 
