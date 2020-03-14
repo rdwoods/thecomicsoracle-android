@@ -15,4 +15,5 @@
     <string name="sr_video_thumbnail">Video thumbnail image</string>
     <string name="sr_fav_character_thumbnail">Favorite character thumbnail image</string>
     <string name="sr_thumbnail_image">Character thumbnail image</string>
+    <string name="character_search_no_description_available">No character description available</string>
 </resources>

@@ -56,7 +56,7 @@
         </receiver>
 
         <activity
-            android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity">
+            android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewFragment">
         </activity>
     </application>
 

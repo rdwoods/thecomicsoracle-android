@@ -8,7 +8,15 @@
     <fragment
         android:id="@+id/characterSearchFragment"
         tools:layout="@layout/fragment_search_results"
-        android:name="com.rwoods.thecomicsoracle.ui.characters.CharacterSearchFragment" />
+        android:name="com.rwoods.thecomicsoracle.ui.characters.CharacterSearchFragment" >
+        <action
+            android:id="@+id/action_to_character_description_web_view"
+            app:destination="@id/characterDescriptionWebViewFragment" />
+
+        <action
+            android:id="@+id/action_to_character_description"
+            app:destination="@id/characterDescriptionFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/videoSearchFragment"
@@ -30,4 +38,13 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/characterDescriptionWebViewFragment"
+        android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewFragment" />
+
+    <fragment
+        android:id="@+id/characterDescriptionFragment"
+        android:name="com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionFragment" />
 </navigation>

@@ -1,17 +1,17 @@
 package com.rwoods.thecomicsoracle.ui.characters
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.ui.ComicsOracleMainViewModel
-import com.rwoods.thecomicsoracle.ui.description.CharacterDescriptionWebViewActivity
 import com.rwoods.thecomicsoracle.util.Constants
 import kotlinx.android.synthetic.main.fragment_search_results.*
 import java.nio.charset.StandardCharsets
@@ -77,19 +77,18 @@ class CharacterSearchFragment : Fragment() {
 
         characterAdapter?.setOnItemClickListener(object: ComicCharacterAdapter.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
-                //val intent = Intent(activity, CharacterDescriptionActivity::class.java)
-                val intent = Intent(context, CharacterDescriptionWebViewActivity::class.java)
-                val bundle = Bundle()
-                val descr = characterAdapter?.searchedCharacters?.get(position)?.description
+                val description = characterAdapter?.searchedCharacters?.get(position)?.description
+                var bundle: Bundle
 
-                descr?.apply {
+                description?.run {
                     val byte = this.toByteArray(StandardCharsets.UTF_8)
+                    bundle = bundleOf(Constants.CHARACTER to byte)
                     bundle.putByteArray(Constants.CHARACTER, byte)
-                    intent.putExtras(bundle)
 
-                    startActivity(intent)
+                    view.findNavController().navigate(R.id.characterDescriptionWebViewFragment, bundle)
+
                 } ?: run {
-                    startActivity(intent)
+                    Toast.makeText(context, getString(R.string.character_search_no_description_available), Toast.LENGTH_LONG)
                 }
             }
         })
@@ -130,7 +129,7 @@ class CharacterSearchFragment : Fragment() {
                 val savedSearchTerm = characterSearchView?.query.toString()
                 val savedData = viewModel.getSavedData()
 
-                viewModel.setSavedSearchResults(savedSearchTerm, savedData?.let { it } ?: run { "" })
+                viewModel.setSavedSearchResults(savedSearchTerm, savedData?.run { this } ?: run { "" })
 
             } catch (e: Exception) {
                 e.printStackTrace()

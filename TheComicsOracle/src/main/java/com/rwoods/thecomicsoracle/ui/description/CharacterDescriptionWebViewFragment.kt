@@ -1,37 +1,38 @@
 package com.rwoods.thecomicsoracle.ui.description
 
-import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
-import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.util.Constants
-import kotlinx.android.synthetic.main.activity_character_description_web_view.*
+import kotlinx.android.synthetic.main.fragment_character_description_web_view.*
 import java.nio.charset.StandardCharsets
 
 
-class CharacterDescriptionWebViewActivity : AppCompatActivity() {
+class CharacterDescriptionWebViewFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_character_description_web_view)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_character_description_web_view, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         webViewDescription.setPadding(0, 0, 0, 0)
 
-        getScale()?.apply {
+        getScale()?.run {
             webViewDescription.setInitialScale(this)
         }
 
+        val characterDescription: String
 
-        var characterDescription = ""
-
-        val args = intent.extras
-
-        args?.let {bundle ->
-            bundle.getByteArray(Constants.CHARACTER)?.apply {
-                characterDescription = String(this, StandardCharsets.UTF_8)
-            }
+        characterDescription = arguments?.getByteArray(Constants.CHARACTER)?.run {
+            String(this, StandardCharsets.UTF_8)
+        } ?: run {
+            ""
         }
 
         webViewDescription.settings.loadWithOverviewMode = true
@@ -46,7 +47,8 @@ class CharacterDescriptionWebViewActivity : AppCompatActivity() {
 
     private fun getScale(): Int? {
         val size = Point()
-        (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getSize(size)
+
+        activity?.windowManager?.defaultDisplay?.getSize(size)
         val width = size.x.toDouble()
         val height = size.y.toDouble()
 
