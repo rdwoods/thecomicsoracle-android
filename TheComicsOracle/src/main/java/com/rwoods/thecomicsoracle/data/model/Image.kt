@@ -1,7 +1,9 @@
 package com.rwoods.thecomicsoracle.data.model
 
 import com.squareup.moshi.Json
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Image (
 
     @Json(name = "icon_url")

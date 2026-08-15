@@ -1,23 +1,20 @@
 package com.rwoods.thecomicsoracle
 
 import android.app.Application
-import android.content.Context
-import androidx.multidex.MultiDex
-import com.google.firebase.FirebaseApp
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import com.rwoods.thecomicsoracle.theme.AppBackground
+import dagger.hilt.android.HiltAndroidApp
 
 /**
  * Created by rwoods on 2/23/2016.
  */
-class ComicsOracleApplication : Application() {
+@HiltAndroidApp
+class ComicsOracleApplication : Application()
 
-    override fun onCreate() {
-        super.onCreate()
-
-        FirebaseApp.initializeApp(this)
-    }
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        MultiDex.install(this)
+@Composable
+fun ComicsOracleApp() {
+    Surface(color = AppBackground) {
+        ComicsOracleNavHost()
     }
 }

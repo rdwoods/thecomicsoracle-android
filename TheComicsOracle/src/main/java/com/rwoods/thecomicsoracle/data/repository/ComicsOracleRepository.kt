@@ -1,74 +1,54 @@
 package com.rwoods.thecomicsoracle.data.repository
 
-import android.app.Application
+import com.rwoods.thecomicsoracle.data.preferences.SharedPreferencesHelper
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 import com.rwoods.thecomicsoracle.data.model.Video
-import com.rwoods.thecomicsoracle.data.preferences.SharedPreferencesHelper
-import com.rwoods.thecomicsoracle.data.retrofit.RetrofitWrapper
+import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
+import timber.log.Timber
+import java.io.IOException
 
+interface ComicsOracleRepository {
 
-/**
- * Created by Rahman Woods on 5/30/17.
+    val sharedPreferencesHelper: SharedPreferencesHelper
 
- */
+    fun getCharactersFromRest(searchText: String): Flow<List<ComicCharacter>>
 
-class ComicsOracleRepository(application: Application) : BaseRepository() {
-    val sharedPreferencesHelper: SharedPreferencesHelper = SharedPreferencesHelper(application)
-    //private var firebaseDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
+    fun getVideosFromRest(searchText: String): Flow<List<Video>>
 
-    var retrofitWrapper: RetrofitWrapper = RetrofitWrapper(application)
+    fun getFavoritesFromDatabase(): Flow<List<ComicCharacter>>
 
-    val characterApi = retrofitWrapper.createComicsOracleService()
+    fun selectOrUnselectFavoriteCharacter(selected: Boolean, character: ComicCharacter): Flow<Boolean>
 
+    suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>, errorMessage: String): T? {
 
-    suspend fun getCharactersFromRest(searchText: String): MutableList<ComicCharacter>? {
+        val result : Result<T> = safeApiResult(call,errorMessage)
+        var data : T? = null
 
-        val filteredCharacterName = "name:$searchText"
-
-        val charactersResponse = safeApiCall(
-                call = { characterApi.getCharacterByNameAsync(filteredCharacterName) },
-                errorMessage = "Error Fetching Characters")
-
-        return charactersResponse?.comicCharacters?.toMutableList()
-    }
-
-
-    suspend fun getVideosFromRest(searchText: String): MutableList<Video>? {
-
-        val filteredCharacterName = "name:$searchText"
-
-        val videoResponse = safeApiCall(
-                call = { characterApi.getVideoByNameAsync(filteredCharacterName) },
-                errorMessage = "Error Fetching Characters")
-
-        return videoResponse?.videos?.toMutableList()
-    }
-
-    /*internal fun writeFavoriteToDatabase(character : ComicCharacter) {
-        val ref = firebaseDatabase.child("users").child("rdwoods1")
-
-        ref.setValue(character)
-    }*/
-
-
-    /*internal fun getFavoritesFromFirebase(listener: FirebaseDataListener) {
-        val ref = firebaseDatabase.child("users")
-        val favoriteCharacters = ArrayList<ComicCharacter>()
-
-        val favoriteCharacterQuery = ref.equalTo("rdwoods1")
-        favoriteCharacterQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (singleSnapshot in dataSnapshot.children) {
-                    val character = singleSnapshot.getValue(ComicCharacter::class.java)
-                    character?.apply { favoriteCharacters.add(this) }
-                }
-
-                listener.onDatabaseDataRetrieved(favoriteCharacters)
+        when(result) {
+            is Result.Success -> {
+                data = result.data
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Timber.e(databaseError.toException())
+            is Result.Error -> {
+                Timber.d("$errorMessage & Exception - ${result.exception}")
             }
-        })
-    }*/
+        }
+
+        return data
+
+    }
+
+    private suspend fun <T: Any> safeApiResult(call: suspend ()-> Response<T>, errorMessage: String) : Result<T>{
+        val response = call.invoke()
+        if(response.isSuccessful){
+            val responseData = response.body()
+
+            responseData?.run{
+                return Result.Success(this)
+            }
+        }
+
+        return Result.Error(IOException("Error Occurred during getting safe Api result, Custom ERROR - $errorMessage"))
+    }
 }

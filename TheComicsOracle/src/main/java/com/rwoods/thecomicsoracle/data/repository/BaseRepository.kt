@@ -26,15 +26,23 @@ open class BaseRepository{
     }
 
     private suspend fun <T: Any> safeApiResult(call: suspend ()-> Response<T>, errorMessage: String) : Result<T>{
-        val response = call.invoke()
-        if(response.isSuccessful){
-            val responseData = response.body()
-
-            responseData?.run{
-                return Result.Success(this)
+        try {
+            val response = call.invoke()
+            if (response.isSuccessful) {
+                val responseData = response.body()
+                responseData?.run {
+                    return Result.Success(this)
+                }
             }
+            
+            // Detailed logging for failed responses
+            val errorBody = response.errorBody()?.string()
+            Timber.e("API ERROR: Code ${response.code()}, Message: ${response.message()}, Body: $errorBody")
+            
+            return Result.Error(IOException("Error Occurred: Code ${response.code()}, Custom ERROR - $errorMessage"))
+        } catch (e: Exception) {
+            Timber.e(e, "API EXCEPTION: $errorMessage")
+            return Result.Error(e)
         }
-
-        return Result.Error(IOException("Error Occurred during getting safe Api result, Custom ERROR - $errorMessage"))
     }
 }

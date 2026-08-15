@@ -11,6 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object ComicsOracleRetrofitApiRestClient {
 
@@ -19,6 +20,10 @@ object ComicsOracleRetrofitApiRestClient {
         private set
 
     val accessibleCookieStore = HashMap<HttpUrl, List<Cookie>>()
+
+    private val timeout = 30
+    private val timeoutLength = TimeUnit.SECONDS
+
 
     var retrofit: Retrofit? = null
         private set
@@ -52,6 +57,17 @@ object ComicsOracleRetrofitApiRestClient {
                         return chain.proceed(newRequest);
                     }
                 })*/
+                .addInterceptor { chain ->
+                    val request = chain.request().newBuilder()
+                        .header("User-Agent", "TheComicsOracle/1.0 (Android; Contact: rdwoods1@gmail.com)")
+                        .header("Referer", "https://comicvine.gamespot.com/")
+                        .header("Accept", "application/json")
+                        .build()
+                    chain.proceed(request)
+                }
+                .connectTimeout(timeout.toLong(), timeoutLength)
+                .readTimeout(timeout.toLong(), timeoutLength)
+                .writeTimeout(timeout.toLong(), timeoutLength)
                 .build()
 
         retrofit = Retrofit.Builder()
