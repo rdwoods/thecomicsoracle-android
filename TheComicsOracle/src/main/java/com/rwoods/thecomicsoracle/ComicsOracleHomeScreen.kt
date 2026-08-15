@@ -43,16 +43,19 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 import com.rwoods.thecomicsoracle.ui.ComicsOracleHomeViewModel
 import com.rwoods.thecomicsoracle.ui.HomeIntent
 import com.rwoods.thecomicsoracle.ui.HomeState
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class, ExperimentalTextApi::class)
 @Composable
 fun ComicsOracleHomeScreen(
     viewModel: ComicsOracleHomeViewModel,
@@ -135,7 +138,10 @@ fun ComicsOracleHomeScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(state.value.characters) { character ->
+                    items(
+                        items = state.value.characters,
+                        key = { it.id }
+                    ) { character ->
                         CharacterCard(character = character) { 
                             onCharacterClick(character) 
                         }
@@ -146,7 +152,7 @@ fun ComicsOracleHomeScreen(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalTextApi::class)
 @Composable
 private fun CharacterCard(
     character: ComicCharacter,
@@ -159,15 +165,17 @@ private fun CharacterCard(
             GlideImage(
                 model = character.image?.smallUrl,
                 contentDescription = "Character Image",
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(64.dp),
+                loading = placeholder(R.drawable.default_profile_avatar),
+                failure = placeholder(R.drawable.default_profile_avatar)
             )
 
-            Spacer(modifier = Modifier.width(16.dp)) // Gap between image and text
+            Spacer(modifier = Modifier.width(16.dp))
 
             Text(
                 text = AnnotatedString.fromHtml(character.name),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.align(androidx.compose.ui.Alignment.CenterVertically)
             )
         }
     }

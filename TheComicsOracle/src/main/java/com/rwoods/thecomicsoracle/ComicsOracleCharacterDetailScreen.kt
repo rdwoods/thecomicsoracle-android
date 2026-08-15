@@ -21,12 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 import com.rwoods.thecomicsoracle.ui.ComicsOracleCharacterDetailViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable
 fun ComicsOracleCharacterDetailScreen(
     viewModel: ComicsOracleCharacterDetailViewModel,
@@ -38,7 +39,11 @@ fun ComicsOracleCharacterDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(character?.name ?: "Character Detail") },
+                title = { 
+                    character?.let { 
+                        Text(text = AnnotatedString.fromHtml(it.name)) 
+                    } ?: Text("Character Detail")
+                },
                 actions = {
                     character?.let { char ->
                         IconButton(onClick = { onFavoriteSelected(!state.value.selected, char) }) {
@@ -62,7 +67,10 @@ fun ComicsOracleCharacterDetailScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             character?.let {
-                Text(text = it.name, style = MaterialTheme.typography.headlineLarge)
+                Text(
+                    text = AnnotatedString.fromHtml(it.name), 
+                    style = MaterialTheme.typography.headlineLarge
+                )
                 
                 Text(
                     text = "Gender: ${if (it.gender == "1") "Male" else "Female"}", 
