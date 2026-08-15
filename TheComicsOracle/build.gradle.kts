@@ -33,6 +33,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             applicationIdSuffix = ".release"
             buildConfigField("String", "BASE_URL", "\"https://comicvine.gamespot.com/api/\"")
