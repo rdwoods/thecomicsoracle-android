@@ -11,7 +11,6 @@ buildscript {
         maven { url = uri("https://storage.googleapis.com/r8-releases/raw") }
     }
     dependencies {
-        classpath("com.android.tools:r8:8.2.24")
         classpath(libs.android.gradle.plugin)
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.google.services.plugin)

@@ -15,6 +15,10 @@ android {
     namespace = "com.rwoods.thecomicsoracle"
     compileSdk = 37
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     val localProps = Properties().apply {
         val f = rootProject.file("local.properties")
         if (f.exists()) f.inputStream().use { load(it) }
@@ -28,10 +32,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
     }
 
     defaultConfig {
@@ -103,14 +103,12 @@ dependencies {
 
     // Android Support dependencies
     implementation(libs.androidx.multidex)
-    implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
 
     // Kotlin
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     //Room
     implementation(libs.androidx.room.runtime)
@@ -166,28 +164,12 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
 
     // JUnit4 Rules
-    androidTestImplementation(libs.androidx.test.rules)
-
-    // Espresso core
-    androidTestImplementation(libs.androidx.test.espresso.core) {
-        exclude(module = "support-annotations")
-    }
-    // Espresso-contrib for DatePicker, RecyclerView, Drawer actions, Accessibility checks, CountingIdlingResource
-    androidTestImplementation(libs.androidx.test.espresso.contrib) {
-        exclude(module = "support-annotations")
-        exclude(module = "support-v4")
-        exclude(module = "support-v13")
-        exclude(module = "design")
-        exclude(module = "appcompat-v7")
-        exclude(module = "recyclerview-v7")
-    }
-
     androidTestImplementation(libs.androidx.annotation)
-    implementation(libs.androidx.navigation.compose)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

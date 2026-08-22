@@ -2,14 +2,12 @@
 kotlin = "2.2.10"
 agp = "9.2.1"
 googleServices = "4.5.0"
-firebaseCrashlyticsGradle = "2.8.1"
+firebaseCrashlyticsGradle = "3.0.8"
 multidex = "2.0.1"
-appcompat = "1.1.0"
 material = "1.2.0-alpha05"
 coreKtx = "1.2.0"
 coroutines = "1.8.1"
 ksp = "1.7.20-1.0.8"
-lifecycle = "2.8.2"
 room = "2.6.1"
 retrofit = "2.7.1"
 okhttp = "4.4.0"
@@ -30,20 +28,15 @@ playServicesAuth = "17.0.0"
 junit = "4.13"
 mockito = "3.1.0"
 testRunner = "1.2.0"
-testRules = "1.2.0"
-espresso = "3.2.0"
 annotation = "1.1.0"
 composeBom = "2024.09.00"
 activityCompose = "1.9.0"
 lifecycleCompose = "2.8.2"
-composeCompiler = "1.5.15"
 navigationCompose = "2.7.7"
 hilt = "2.57.2"
 kotlinxSerialization = "1.6.3"
-kotlinVersion = "2.2.10"
 
 [libraries]
-# Libraries
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 google-services-plugin = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
@@ -51,12 +44,10 @@ firebase-crashlytics-plugin = { group = "com.google.firebase", name = "firebase-
 kotlin-serialization-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
 
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
@@ -83,9 +74,6 @@ play-services-auth = { group = "com.google.android.gms", name = "play-services-a
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
-androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "testRules" }
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
-androidx-test-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -109,7 +97,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [bundles]
 compose = [

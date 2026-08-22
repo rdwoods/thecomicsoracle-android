@@ -1,6 +1,7 @@
 package com.rwoods.thecomicsoracle.di
 
 import android.content.Context
+import com.rwoods.thecomicsoracle.BuildConfig
 import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.rwoods.thecomicsoracle.data.service.ComicsOracleApiService
 import com.squareup.moshi.Moshi
@@ -18,6 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -25,6 +27,10 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val TIMEOUT_SECONDS = 30L
+
+    @Provides
+    @Named("apiKey")
+    fun provideApiKey(): String = BuildConfig.API_KEY
 
     @Provides
     @Singleton
@@ -68,10 +74,18 @@ object NetworkModule {
     fun provideOkHttpClient(
         cache: Cache,
         headerInterceptor: Interceptor,
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        @Named("apiKey") apiKey: String
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
+            .addInterceptor { chain ->
+                val url = chain.request().url.newBuilder()
+                    .addQueryParameter("api_key", apiKey)
+                    .addQueryParameter("format", "json")
+                    .build()
+                chain.proceed(chain.request().newBuilder().url(url).build())
+            }
             .addInterceptor(headerInterceptor)
             .addInterceptor(loggingInterceptor)
             .addInterceptor(CacheInterceptor())

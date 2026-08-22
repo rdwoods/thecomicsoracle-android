@@ -42,21 +42,6 @@ object ComicsOracleRetrofitApiRestClient {
 
         val client = OkHttpClient.Builder()
                 .addInterceptor(logging)
-                /*.addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
-                        Request request = chain.request();
-                        Request newRequest;
-                        int maxAge = 60 * 60;
-                        newRequest = request.newBuilder()
-                                .addHeader("Accept", "application/json")
-                                .addHeader("Cache-Control", "public, max-age=" + maxAge)
-                                .build();
-
-
-                        return chain.proceed(newRequest);
-                    }
-                })*/
                 .addInterceptor { chain ->
                     val request = chain.request().newBuilder()
                         .header("User-Agent", "TheComicsOracle/1.0 (Android; Contact: rdwoods1@gmail.com)")
