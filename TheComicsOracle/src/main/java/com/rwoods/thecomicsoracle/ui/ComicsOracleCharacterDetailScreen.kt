@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle
+package com.rwoods.thecomicsoracle.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.ui.ComicsOracleCharacterDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable

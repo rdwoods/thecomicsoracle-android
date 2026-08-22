@@ -1,6 +1,9 @@
 package com.rwoods.thecomicsoracle.ui
 
-import com.rwoods.thecomicsoracle.ui.base.BaseViewModel
+import com.rwoods.thecomicsoracle.ui.state.CharacterDetailsEffect
+import com.rwoods.thecomicsoracle.ui.state.CharacterDetailsIntent
+import com.rwoods.thecomicsoracle.ui.state.CharacterDetailsState
+import com.rwoods.thecomicsoracle.viewmodel.base.BaseViewModel
 import com.rwoods.thecomicsoracle.usecase.ComicsOracleCharacterDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest

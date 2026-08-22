@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle
+package com.rwoods.thecomicsoracle.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
@@ -51,9 +52,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.ui.ComicsOracleHomeViewModel
-import com.rwoods.thecomicsoracle.ui.HomeIntent
-import com.rwoods.thecomicsoracle.ui.HomeState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class, ExperimentalTextApi::class)
 @Composable
@@ -127,7 +125,7 @@ fun ComicsOracleHomeScreen(
         when {
             state.value.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = androidx.compose.ui.Alignment.Center) {
+                    contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
@@ -175,7 +173,7 @@ private fun CharacterCard(
             Text(
                 text = AnnotatedString.fromHtml(character.name),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(androidx.compose.ui.Alignment.CenterVertically)
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
     }

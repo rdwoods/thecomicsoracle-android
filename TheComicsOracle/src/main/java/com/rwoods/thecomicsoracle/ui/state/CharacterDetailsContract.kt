@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui
+package com.rwoods.thecomicsoracle.ui.state
 
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
 
