@@ -1,16 +1,15 @@
 [versions]
-kotlin = "1.9.25"
-agp = "8.13.2"
+kotlin = "2.2.10"
+agp = "9.2.1"
 googleServices = "4.5.0"
 firebaseCrashlyticsGradle = "2.8.1"
-navigation = "2.5.3"
 multidex = "2.0.1"
 appcompat = "1.1.0"
 material = "1.2.0-alpha05"
 coreKtx = "1.2.0"
 coroutines = "1.8.1"
+ksp = "1.7.20-1.0.8"
 lifecycle = "2.8.2"
-fragmentKtx = "1.2.2"
 room = "2.6.1"
 retrofit = "2.7.1"
 okhttp = "4.4.0"
@@ -39,19 +38,18 @@ activityCompose = "1.9.0"
 lifecycleCompose = "2.8.2"
 composeCompiler = "1.5.15"
 navigationCompose = "2.7.7"
-hilt = "2.51.1"
+hilt = "2.57.2"
 kotlinxSerialization = "1.6.3"
+kotlinVersion = "2.2.10"
 
 [libraries]
-# Plugins (used in classpath)
+# Libraries
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 google-services-plugin = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-crashlytics-plugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
-navigation-safe-args-plugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 kotlin-serialization-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
 
-# Libraries
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -59,7 +57,6 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
@@ -74,7 +71,6 @@ apache-commons-lang3 = { group = "org.apache.commons", name = "commons-lang3", v
 apache-commons-collections4 = { group = "org.apache.commons", name = "commons-collections4", version.ref = "commonsCollections" }
 commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "commonsCodec" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide-compose" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 firebase-core = { group = "com.google.firebase", name = "firebase-core", version.ref = "firebaseCore" }
@@ -91,8 +87,6 @@ androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 androidx-test-espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espresso" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
-androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
 
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -111,6 +105,11 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 
 [bundles]
 compose = [
