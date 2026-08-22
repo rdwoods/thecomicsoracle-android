@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -12,6 +14,16 @@ plugins {
 android {
     namespace = "com.rwoods.thecomicsoracle"
     compileSdk = 34
+
+    val localProps = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
+
+    val comicVineApiKey: String =
+        localProps.getProperty("COMIC_VINE_API_KEY")
+            ?: System.getenv("COMIC_VINE_API_KEY")
+            ?: ""
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -37,13 +49,13 @@ android {
             isDebuggable = false
             applicationIdSuffix = ".release"
             buildConfigField("String", "BASE_URL", "\"https://comicvine.gamespot.com/api/\"")
-            buildConfigField("String", "API_KEY", "\"310286c7441deb2eac2cc1aeae01393b69c99452\"")
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"))
+            buildConfigField("String", "API_KEY", "\"$comicVineApiKey\"")
+            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
         }
 
         getByName("debug") {
             buildConfigField("String", "BASE_URL", "\"https://comicvine.gamespot.com/api/\"")
-            buildConfigField("String", "API_KEY", "\"310286c7441deb2eac2cc1aeae01393b69c99452\"")
+            buildConfigField("String", "API_KEY", "\"$comicVineApiKey\"")
             applicationIdSuffix = ".debug"
         }
 
@@ -96,7 +108,6 @@ dependencies {
     implementation(libs.androidx.multidex)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
-    implementation(libs.androidx.constraintlayout)
 
     // Kotlin
     implementation(libs.androidx.core.ktx)
