@@ -12,9 +12,15 @@ import retrofit2.http.Query
  */
 interface ComicsOracleApiService {
 
-    @GET("characters/?api_key=" + BuildConfig.API_KEY + "&format=json")
-    suspend fun getCharacterByNameAsync(@Query("filter") characterName: String): Response<ComicCharacterResponse>
+    @GET("characters")
+    suspend fun getCharacterByNameAsync(
+        @Query("filter") characterName: String,
+        @Query("limit") limit: Int = 20
+    ): Response<ComicCharacterResponse>
 
-    @GET("videos/?api_key=" + BuildConfig.API_KEY + "&format=json")
-    suspend fun getVideoByNameAsync(@Query("filter") videoName: String): Response<VideoResponse>
+    @GET("videos/")
+    suspend fun getVideoByNameAsync(
+        @Query("filter") videoName: String,
+        @Query("limit") limit: Int = 20
+    ): Response<VideoResponse>
 }

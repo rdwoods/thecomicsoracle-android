@@ -4,14 +4,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity
 data class ComicCharacter(
         @PrimaryKey val id: Int,
 
-        @ColumnInfo(name = "name") var name: String? = null,
+        @ColumnInfo(name = "name") var name: String = "",
 
-        @ColumnInfo(name = "gender") var gender: String? = null,
+        @ColumnInfo(name = "gender") var gender: String = "",
 
         @Json(name = "image")
         @ColumnInfo(name = "image")
