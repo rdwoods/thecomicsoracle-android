@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle.ui.base
+package com.rwoods.thecomicsoracle.viewmodel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

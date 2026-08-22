@@ -1,4 +1,4 @@
-package com.rwoods.thecomicsoracle
+package com.rwoods.thecomicsoracle.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -7,9 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.ui.ComicsOracleCharacterDetailViewModel
-import com.rwoods.thecomicsoracle.ui.ComicsOracleHomeViewModel
-import com.rwoods.thecomicsoracle.ui.Destination
 import kotlinx.serialization.json.Json
 
 @Composable

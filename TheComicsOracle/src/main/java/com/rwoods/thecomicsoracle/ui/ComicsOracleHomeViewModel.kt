@@ -1,6 +1,6 @@
 package com.rwoods.thecomicsoracle.ui
 
-import com.rwoods.thecomicsoracle.ui.base.BaseViewModel
+import com.rwoods.thecomicsoracle.viewmodel.base.BaseViewModel
 import com.rwoods.thecomicsoracle.usecase.ComicsOracleHomeCharacterUseCase
 import com.rwoods.thecomicsoracle.usecase.ComicsOracleHomeVideoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

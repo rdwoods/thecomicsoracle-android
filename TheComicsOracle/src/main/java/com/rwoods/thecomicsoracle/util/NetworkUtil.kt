@@ -6,7 +6,6 @@ package com.rwoods.thecomicsoracle.util
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.rwoods.thecomicsoracle.data.retrofit.ComicsOracleRetrofitApiRestClient
 import okhttp3.Cookie
 import java.util.*
 
@@ -33,38 +32,6 @@ class NetworkUtil protected constructor()// Exists only to defeat instantiation.
         this.online = online
     }
 
-    fun getCookies(): List<Cookie> {
-        val cookieMap = ComicsOracleRetrofitApiRestClient.accessibleCookieStore
-
-        for (key in cookieMap.keys) {
-            cookieMap[key]?.apply {
-                for (cookie in this) {
-                    cookies.add(cookie)
-                }
-            }
-        }
-
-        return cookies
-    }
-
-
-    fun getSpecificCookie(cookieName: String): String {
-        val cookieMap = ComicsOracleRetrofitApiRestClient.accessibleCookieStore
-
-        var cookieValue: String? = null
-        for (key in cookieMap.keys) {
-            cookieMap[key]?.apply {
-                for (cookie in this) {
-                    if (cookie.name.contains(cookieName)) {
-                        cookieValue = cookie.value
-                    }
-                }
-            }
-
-        }
-
-        return cookieValue as String
-    }
 
     companion object {
 
