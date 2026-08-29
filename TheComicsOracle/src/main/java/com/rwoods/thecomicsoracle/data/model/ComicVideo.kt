@@ -1,8 +1,12 @@
 package com.rwoods.thecomicsoracle.data.model
 
+import androidx.room.Entity
 import com.squareup.moshi.Json
+import kotlinx.serialization.Serializable
 
-data class Video(
+@Serializable
+@Entity
+data class ComicVideo(
 
         var id: Long = 0,
 

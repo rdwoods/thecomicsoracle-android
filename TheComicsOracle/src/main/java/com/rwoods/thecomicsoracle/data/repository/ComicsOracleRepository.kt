@@ -2,7 +2,7 @@ package com.rwoods.thecomicsoracle.data.repository
 
 import com.rwoods.thecomicsoracle.data.preferences.SharedPreferencesHelper
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.data.model.Video
+import com.rwoods.thecomicsoracle.data.model.ComicVideo
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import timber.log.Timber
@@ -14,7 +14,7 @@ interface ComicsOracleRepository {
 
     fun getCharactersFromRest(searchText: String): Flow<List<ComicCharacter>>
 
-    fun getVideosFromRest(searchText: String): Flow<List<Video>>
+    fun getVideosFromRest(searchText: String): Flow<List<ComicVideo>>
 
     fun getFavoritesFromDatabase(): Flow<List<ComicCharacter>>
 

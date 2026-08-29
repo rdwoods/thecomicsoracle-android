@@ -1,12 +1,12 @@
 package com.rwoods.thecomicsoracle.ui
 
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.data.model.Video
+import com.rwoods.thecomicsoracle.data.model.ComicVideo
 
 data class HomeState(
     val isLoading: Boolean = false,
     val characters: List<ComicCharacter> = emptyList(),
-    val video: List<Video> = emptyList(),
+    val comicVideos: List<ComicVideo> = emptyList(),
     val searchType : SearchType = SearchType.NONE,
     val error: String? = null
 ) {

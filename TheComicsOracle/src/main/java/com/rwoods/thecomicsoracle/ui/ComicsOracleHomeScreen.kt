@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,8 +28,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -37,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,18 +57,25 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.rwoods.thecomicsoracle.R
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
+import com.rwoods.thecomicsoracle.data.model.ComicVideo
+import com.rwoods.thecomicsoracle.viewmodel.ComicsOracleHomeViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class, ExperimentalTextApi::class)
 @Composable
 fun ComicsOracleHomeScreen(
     viewModel: ComicsOracleHomeViewModel,
     onCharacterClick: (ComicCharacter) -> Unit,
+    onVideoClick: (ComicVideo) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     var isSearchActive by remember { mutableStateOf(value = false) }
     var searchQuery by remember { mutableStateOf("") }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val focusManager = LocalFocusManager.current
+    val tabs = listOf("Characters", "Videos")
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -80,6 +92,26 @@ fun ComicsOracleHomeScreen(
                     }
                 )
 
+                // 3. Create the TabRow container
+                PrimaryTabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // 4. Iterate over titles to populate individual tabs
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                // Animate or scroll to the chosen pager destination
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            text = { Text(text = title) }
+                        )
+                    }
+                }
+
                 if (isSearchActive) {
                     Surface(
                         color = TopAppBarDefaults.topAppBarColors().containerColor,
@@ -91,11 +123,14 @@ fun ComicsOracleHomeScreen(
                             placeholder = { Text("Search...") },
                             modifier = Modifier.fillMaxWidth(),
                             leadingIcon = {
-                                IconButton(onClick = { 
-                                    isSearchActive = false 
+                                IconButton(onClick = {
+                                    isSearchActive = false
                                     searchQuery = ""
                                 }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back"
+                                    )
                                 }
                             },
                             trailingIcon = {
@@ -109,8 +144,21 @@ fun ComicsOracleHomeScreen(
                             keyboardActions = KeyboardActions(
                                 onSearch = {
                                     if (searchQuery.isNotEmpty()) {
-                                        viewModel.onIntent(HomeIntent.SearchCharacter(searchQuery))
-                                        focusManager.clearFocus()
+                                        if (pagerState.currentPage == 0){
+                                            viewModel.onIntent(
+                                                HomeIntent.SearchCharacter(
+                                                    searchQuery
+                                                )
+                                            )
+                                            focusManager.clearFocus()
+                                        } else {
+                                            viewModel.onIntent(
+                                                HomeIntent.SearchVideo(
+                                                    searchQuery
+                                                )
+                                            )
+                                            focusManager.clearFocus()
+                                        }
                                     }
                                 }
                             ),
@@ -120,28 +168,74 @@ fun ComicsOracleHomeScreen(
                 }
             }
         }
-    ){ padding ->
+    ) { padding ->
+        Column(modifier = Modifier.fillMaxSize()) {
 
-        when {
-            state.value.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
+            // 5. Setup the horizontal pager to display screen content
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) { page ->
+                when {
+                    page == 0 -> {
+                        when {
+                            state.value.isLoading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize().padding(padding),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
 
-            state.value.searchType == HomeState.SearchType.CHARACTER -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(
-                        items = state.value.characters,
-                        key = { it.id }
-                    ) { character ->
-                        CharacterCard(character = character) { 
-                            onCharacterClick(character) 
+                            state.value.searchType == HomeState.SearchType.CHARACTER -> {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize().padding(padding),
+                                    contentPadding = PaddingValues(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(
+                                        items = state.value.characters,
+                                        key = { it.id }
+                                    ) { character ->
+                                        CharacterCard(character = character) {
+                                            onCharacterClick(character)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    page == 1 -> {
+                        when {
+                            state.value.isLoading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize().padding(padding),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            state.value.searchType == HomeState.SearchType.VIDEO -> {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize().padding(padding),
+                                    contentPadding = PaddingValues(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(
+                                        items = state.value.comicVideos,
+                                        key = { it.id }
+                                    ) { video ->
+                                        VideoCard(comicVideo = video) {
+                                            onVideoClick(video)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -172,6 +266,36 @@ private fun CharacterCard(
 
             Text(
                 text = AnnotatedString.fromHtml(character.name),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalTextApi::class)
+@Composable
+private fun VideoCard(
+    comicVideo: ComicVideo,
+    onClick: () -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            GlideImage(
+                model = comicVideo.image?.smallUrl,
+                contentDescription = "Video Image",
+                modifier = Modifier.size(64.dp),
+                loading = placeholder(R.drawable.default_profile_avatar),
+                failure = placeholder(R.drawable.default_profile_avatar)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = comicVideo.name ?: "",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )

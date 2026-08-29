@@ -1,8 +1,11 @@
-package com.rwoods.thecomicsoracle.ui
+package com.rwoods.thecomicsoracle.viewmodel
 
+import com.rwoods.thecomicsoracle.ui.HomeEffect
+import com.rwoods.thecomicsoracle.ui.HomeIntent
+import com.rwoods.thecomicsoracle.ui.HomeState
 import com.rwoods.thecomicsoracle.viewmodel.base.BaseViewModel
 import com.rwoods.thecomicsoracle.usecase.ComicsOracleHomeCharacterUseCase
-import com.rwoods.thecomicsoracle.usecase.ComicsOracleHomeVideoUseCase
+import com.rwoods.thecomicsoracle.usecase.ComicsOracleVideoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -10,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ComicsOracleHomeViewModel @Inject constructor(
     private val comicsOracleHomeCharacterUseCase: ComicsOracleHomeCharacterUseCase,
-    private val comicsOracleHomeVideoUseCase: ComicsOracleHomeVideoUseCase
+    private val comicsOracleVideoUseCase: ComicsOracleVideoUseCase
 ) :  BaseViewModel<HomeIntent, HomeState, HomeEffect>(initialState = HomeState()) {
 
     override suspend fun reduce(intent: HomeIntent) {
@@ -23,7 +26,7 @@ class ComicsOracleHomeViewModel @Inject constructor(
                 launchCoroutine(getExceptionHandler { e -> handleGetCharacterException(e) }){
                     comicsOracleHomeCharacterUseCase(intent.searchText).collectLatest { characters ->
                         updateState {
-                            copy(isLoading = false, characters = characters, video = emptyList(), searchType = HomeState.SearchType.CHARACTER)
+                            copy(isLoading = false, characters = characters, comicVideos = emptyList(), searchType = HomeState.SearchType.CHARACTER)
                         }
                     }
                 }
@@ -31,9 +34,9 @@ class ComicsOracleHomeViewModel @Inject constructor(
 
             is HomeIntent.SearchVideo -> {
                 launchCoroutine(getExceptionHandler { e -> handleGetVideoException(e) }){
-                    comicsOracleHomeVideoUseCase(intent.searchText).collectLatest { videos ->
+                    comicsOracleVideoUseCase(intent.searchText).collectLatest { videos ->
                         updateState {
-                            copy(isLoading = false, characters = emptyList(), video = videos, searchType = HomeState.SearchType.VIDEO)
+                            copy(isLoading = false, characters = emptyList(), comicVideos = videos, searchType = HomeState.SearchType.VIDEO)
                         }
                     }
                 }

@@ -2,7 +2,7 @@ package com.rwoods.thecomicsoracle.data.repository
 
 import android.content.Context
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
-import com.rwoods.thecomicsoracle.data.model.Video
+import com.rwoods.thecomicsoracle.data.model.ComicVideo
 import com.rwoods.thecomicsoracle.data.preferences.SharedPreferencesHelper
 import com.rwoods.thecomicsoracle.data.service.ComicsOracleApiService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,7 +28,7 @@ class ComicsOracleRepositoryImpl @Inject constructor(
         emit(charactersResponse?.comicCharacters ?: emptyList())
     }
 
-    override fun getVideosFromRest(searchText: String): Flow<List<Video>> = flow {
+    override fun getVideosFromRest(searchText: String): Flow<List<ComicVideo>> = flow {
         val filteredCharacterName = "name:$searchText"
 
         val videoResponse = safeApiCall(
@@ -36,7 +36,7 @@ class ComicsOracleRepositoryImpl @Inject constructor(
             errorMessage = "Error Fetching Videos"
         )
 
-        emit(value = videoResponse?.videos ?: emptyList())
+        emit(value = videoResponse?.comicVideos ?: emptyList())
     }
 
     override fun getFavoritesFromDatabase(): Flow<List<ComicCharacter>> {
