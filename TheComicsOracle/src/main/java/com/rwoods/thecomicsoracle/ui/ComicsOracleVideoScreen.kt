@@ -1,10 +1,15 @@
 package com.rwoods.thecomicsoracle.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,9 +71,12 @@ fun ComicsOracleVideoScreen(
                         currentVideoUrl = this
                     }
 
-                    VideoPlayer(currentVideoUrl, modifier = Modifier.padding(padding))
+                    VideoPlayer(currentVideoUrl)
 
-                    Row(modifier = Modifier.fillMaxSize()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly) {
                         Button(onClick = {
                             state.value.highResVideoUrl?.apply {
                                 currentVideoUrl = this

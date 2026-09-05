@@ -1,6 +1,7 @@
 package com.rwoods.thecomicsoracle.ui
 
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -57,5 +58,7 @@ fun VideoPlayer(
             }
         },
         modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(16f / 9f)
     )
 }
