@@ -25,6 +25,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import com.rwoods.thecomicsoracle.data.model.ComicCharacter
+import com.rwoods.thecomicsoracle.viewmodel.ComicsOracleCharacterDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
 @Composable

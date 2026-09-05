@@ -1,7 +1,10 @@
 package com.rwoods.thecomicsoracle.di
 
 import android.content.Context
-import com.rwoods.thecomicsoracle.BuildConfig
+import android.util.Log
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.rwoods.thecomicsoracle.data.service.ComicsOracleApiService
 import com.squareup.moshi.Moshi
@@ -26,11 +29,21 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    val TAG = "NetworkModule"
+
     private const val TIMEOUT_SECONDS = 30L
 
     @Provides
-    @Named("apiKey")
-    fun provideApiKey(): String = BuildConfig.API_KEY
+    @Singleton
+    @Named("remoteConfig")
+    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
+        val remoteConfig = FirebaseRemoteConfig.getInstance()
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+            .setMinimumFetchIntervalInSeconds(3600)
+            .build()
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        return remoteConfig
+    }
 
     @Provides
     @Singleton
@@ -75,13 +88,22 @@ object NetworkModule {
         cache: Cache,
         headerInterceptor: Interceptor,
         loggingInterceptor: HttpLoggingInterceptor,
-        @Named("apiKey") apiKey: String
+        @Named("remoteConfig") remoteConfig: FirebaseRemoteConfig
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor { chain ->
+                try {
+                    // Block for up to 5 seconds to get the latest config
+                    Tasks.await(remoteConfig.fetchAndActivate(), 5, TimeUnit.SECONDS)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Remote Config fetch failed or timed out", e)
+                }
+
+                val appApiKey = remoteConfig.getString("app_api_key")
+
                 val url = chain.request().url.newBuilder()
-                    .addQueryParameter("api_key", apiKey)
+                    .addQueryParameter("api_key", appApiKey)
                     .addQueryParameter("format", "json")
                     .build()
                 chain.proceed(chain.request().newBuilder().url(url).build())
