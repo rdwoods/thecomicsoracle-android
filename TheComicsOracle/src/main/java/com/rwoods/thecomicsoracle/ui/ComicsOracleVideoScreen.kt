@@ -71,6 +71,8 @@ fun ComicsOracleVideoScreen(
                         currentVideoUrl = this
                     }
 
+                    Text(text = comicVideo?.name ?: "", modifier = Modifier.padding(16.dp))
+
                     VideoPlayer(currentVideoUrl)
 
                     Spacer(modifier = Modifier.height(16.dp))
