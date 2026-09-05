@@ -19,16 +19,6 @@ android {
         buildConfig = true
     }
 
-    val localProps = Properties().apply {
-        val f = rootProject.file("local.properties")
-        if (f.exists()) f.inputStream().use { load(it) }
-    }
-
-    val comicVineApiKey: String =
-        localProps.getProperty("COMIC_VINE_API_KEY")
-            ?: System.getenv("COMIC_VINE_API_KEY")
-            ?: ""
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -49,13 +39,11 @@ android {
             isDebuggable = false
             applicationIdSuffix = ".release"
             buildConfigField("String", "BASE_URL", "\"https://comicvine.gamespot.com/api/\"")
-            buildConfigField("String", "API_KEY", "\"$comicVineApiKey\"")
             setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
         }
 
         getByName("debug") {
             buildConfigField("String", "BASE_URL", "\"https://comicvine.gamespot.com/api/\"")
-            buildConfigField("String", "API_KEY", "\"$comicVineApiKey\"")
             applicationIdSuffix = ".debug"
         }
 
@@ -106,6 +94,7 @@ dependencies {
 
     // Android Support dependencies
     implementation(libs.androidx.multidex)
+    implementation(libs.firebase.config)
     implementation(libs.google.material)
 
     // Kotlin
@@ -143,7 +132,7 @@ dependencies {
     implementation(libs.slf4j.simple)
 
     // Firebase
-    implementation(libs.firebase.core)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
 
