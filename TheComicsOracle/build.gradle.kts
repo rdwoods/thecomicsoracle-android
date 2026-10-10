@@ -46,12 +46,28 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    val comicsVineApiKey = try {
+        val process = ProcessBuilder("gcloud", "secrets", "versions", "access", "latest", "--secret=COMICS_VINE_API_KEY")
+            .redirectErrorStream(true)
+            .start()
+        val output = process.inputStream.bufferedReader().readText().trim()
+        val exitCode = process.waitFor()
+        if (exitCode == 0 && output.isNotEmpty()) {
+            output.removeSurrounding("\"").removeSurrounding("'")
+        } else {
+            project.findProperty("ComicsVineApiKey")?.toString()?.removeSurrounding("\"") ?: ""
+        }
+    } catch (_: Exception) {
+        project.findProperty("ComicsVineApiKey")?.toString()?.removeSurrounding("\"") ?: ""
+    }
+
     defaultConfig {
         applicationId = "com.rwoods.thecomicsoracle"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "COMICS_VINE_API_KEY", "\"$comicsVineApiKey\"")
     }
 
     buildTypes {

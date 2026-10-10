@@ -1,13 +1,17 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { defineSecret } = require("firebase-functions/v2/params");
+const { defineSecret } = require("firebase-functions/params");
+const express = require("express");
 const axios = require("axios");
 
-const comicsVineApiKey = defineSecret("ComicsVineApiKey");
+const comicsVineApiKey = defineSecret("COMICS_VINE_API_KEY");
+const app = express();
 
-exports.comicvineproxy = onRequest({ secrets: [comicsVineApiKey] }, async (req, res) => {
+app.get("*", async (req, res) => {
   try {
     const subpath = req.path.replace(/^\/+/, "");
     const targetUrl = `https://comicvine.gamespot.com/api/${subpath}`;
+
+    console.log("Proxying request to:", targetUrl, "Query:", req.query);
 
     const response = await axios.get(targetUrl, {
       params: {
@@ -24,10 +28,12 @@ exports.comicvineproxy = onRequest({ secrets: [comicsVineApiKey] }, async (req, 
 
     res.status(response.status).json(response.data);
   } catch (error) {
-    console.error("Proxy error:", error.message);
+    console.error("Proxy error:", error.message, error.response?.data);
     res.status(error.response?.status || 500).json({
       error: error.message,
       details: error.response?.data || null,
     });
   }
 });
+
+exports.comicvineproxy = onRequest({ secrets: [comicsVineApiKey], invoker: "public" }, app);

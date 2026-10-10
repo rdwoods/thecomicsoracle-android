@@ -1,6 +1,7 @@
 package com.rwoods.thecomicsoracle.di
 
 import android.content.Context
+import com.rwoods.thecomicsoracle.BuildConfig
 import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.rwoods.thecomicsoracle.data.service.ComicsOracleApiService
 import com.squareup.moshi.Moshi
@@ -72,6 +73,15 @@ object NetworkModule {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
+            .addInterceptor { chain ->
+                val appApiKey = BuildConfig.COMICS_VINE_API_KEY
+
+                val url = chain.request().url.newBuilder()
+                    .addQueryParameter("api_key", appApiKey)
+                    .addQueryParameter("format", "json")
+                    .build()
+                chain.proceed(chain.request().newBuilder().url(url).build())
+            }
             .addInterceptor(headerInterceptor)
             .addInterceptor(loggingInterceptor)
             .addInterceptor(CacheInterceptor())
@@ -85,7 +95,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/comicvineproxy/")
+            .baseUrl("https://comicvine.gamespot.com/api/")
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
             .build()
