@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.util.Base64
 
 plugins {
     id("com.android.application")
@@ -9,6 +10,27 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose)
+}
+
+tasks.register("generateGoogleServicesJson") {
+    doFirst {
+        val yamlFile = rootProject.file("google-services.yml")
+        if (yamlFile.exists()) {
+            val content = yamlFile.readText()
+            val regex = "google_services_base64\\s*:\\s*[\"']([^\"']+)[\"']".toRegex()
+            val matchResult = regex.find(content)
+            val base64Str = matchResult?.groups?.get(1)?.value
+            if (!base64Str.isNullOrEmpty()) {
+                val decodedBytes = Base64.getDecoder().decode(base64Str)
+                val targetFile = file("google-services.json")
+                targetFile.writeBytes(decodedBytes)
+            }
+        }
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn("generateGoogleServicesJson")
 }
 
 android {
