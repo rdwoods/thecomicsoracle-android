@@ -12,7 +12,6 @@ import java.util.*
 class NetworkUtil protected constructor()// Exists only to defeat instantiation.
 {
     internal var cookies: MutableList<Cookie> = ArrayList()
-    var aesEncrypt: AesEncrypt? = null
 
     fun isOnline(context: Context): Boolean {
         when (getConnectivityStatus(context)) {
