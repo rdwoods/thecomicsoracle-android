@@ -1,10 +1,7 @@
 package com.rwoods.thecomicsoracle.di
 
 import android.content.Context
-import android.util.Log
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.rwoods.thecomicsoracle.BuildConfig
 import com.rwoods.thecomicsoracle.data.interceptor.CacheInterceptor
 import com.rwoods.thecomicsoracle.data.service.ComicsOracleApiService
 import com.squareup.moshi.Moshi
@@ -22,28 +19,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    val TAG = "NetworkModule"
-
     private const val TIMEOUT_SECONDS = 30L
-
-    @Provides
-    @Singleton
-    @Named("remoteConfig")
-    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
-        val remoteConfig = FirebaseRemoteConfig.getInstance()
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(3600)
-            .build()
-        remoteConfig.setConfigSettingsAsync(configSettings)
-        return remoteConfig
-    }
 
     @Provides
     @Singleton
@@ -87,20 +69,12 @@ object NetworkModule {
     fun provideOkHttpClient(
         cache: Cache,
         headerInterceptor: Interceptor,
-        loggingInterceptor: HttpLoggingInterceptor,
-        @Named("remoteConfig") remoteConfig: FirebaseRemoteConfig
+        loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor { chain ->
-                try {
-                    // Block for up to 5 seconds to get the latest config
-                    Tasks.await(remoteConfig.fetchAndActivate(), 5, TimeUnit.SECONDS)
-                } catch (e: Exception) {
-                    Log.w(TAG, "Remote Config fetch failed or timed out", e)
-                }
-
-                val appApiKey = remoteConfig.getString("app_api_key")
+                val appApiKey = BuildConfig.COMICS_VINE_API_KEY
 
                 val url = chain.request().url.newBuilder()
                     .addQueryParameter("api_key", appApiKey)
@@ -133,4 +107,3 @@ object NetworkModule {
         return retrofit.create(ComicsOracleApiService::class.java)
     }
 }
-
