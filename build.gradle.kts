@@ -1,6 +1,6 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Top-level build file where you can add configuration options common to all subprojects/modules.
 plugins {
-    id("com.google.devtools.ksp") version "2.3.2" apply false
+    id("com.google.devtools.ksp") version "2.3.6" apply false
     alias(libs.plugins.kotlin.compose) apply false
 }
 
@@ -29,5 +29,7 @@ allprojects {
 }
 
 tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+    group = "build"
+    description = "Deletes the build directory."
+    delete(rootProject.layout.buildDirectory)
 }
